@@ -12,4 +12,6 @@ Projetos dos anos passados:
 * https://github.com/jpleitao/projecto-cg
 * https://github.com/bcaceiro/OpenGL---Crapenstein3D
 * https://github.com/ThrostGunnulf/SpaceTimeInvaders
+* https://github.com/andrepcg/CG
+* https://github.com/nmoya/CG-2012
 * https://github.com/Onumis/Solar-System
