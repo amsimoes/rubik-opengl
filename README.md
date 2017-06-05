@@ -3,6 +3,7 @@
 Projetos dos anos passados:
 
 * https://github.com/ABaptista/cg2015
+* https://github.com/MGhareeb32/opengl-rubix-cube
 * https://github.com/tomasfrancisco/cg-project
 * https://github.com/jorgeraujo/projecto_cg
 * https://github.com/noegodinho/cg-project
