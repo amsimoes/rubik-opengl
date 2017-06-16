@@ -21,7 +21,11 @@
 #include "RgbImage.h"
 
 #ifndef RGBIMAGE_DONT_USE_OPENGL
-#include <GLUT/glut.h>
+#ifdef __linux__
+	#include <GL/glut.h>
+#else
+	#include <GLUT/glut.h>	
+#endif
 #endif
 
 RgbImage::RgbImage( int numRows, int numCols )

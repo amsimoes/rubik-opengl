@@ -1,7 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <GLUT/glut.h>
+
+#ifdef __linux__
+	#include <GL/glut.h>
+#else
+	#include <GLUT/glut.h>	
+#endif
+
 #include "RgbImage.h"
 
 
