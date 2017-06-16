@@ -12,11 +12,11 @@
 
 
 //--------------------------------- Definir cores
-#define AZUL     0.0, 0.0, 1.0, 1.0
-#define VERMELHO 1.0, 0.0, 0.0, 1.0
-#define AMARELO  1.0, 1.0, 0.0, 1.0
-#define VERDE    0.0, 1.0, 0.0, 1.0
-#define LARANJA  1.0, 0.5, 0.1, 1.0
+#define BLUE     0.0, 0.0, 1.0, 1.0
+#define RED 	 1.0, 0.0, 0.0, 1.0
+#define YELLOW   1.0, 1.0, 0.0, 1.0
+#define GREEN    0.0, 1.0, 0.0, 1.0
+#define ORANGE   1.0, 0.5, 0.1, 1.0
 #define WHITE    1.0, 1.0, 1.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define GRAY     0.9, 0.92, 0.29, 1.0
@@ -117,8 +117,7 @@ void resizeWindow(GLsizei w, GLsizei h)
 	glutPostRedisplay();
 }
 
-
-void drawScene(){
+void drawWalls() {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[1]);
@@ -191,11 +190,14 @@ void drawScene(){
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
-	//*****************************************************
-	// A IMPLEMENTAR PELOS ALUNOS
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chaleira
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixos
-	glColor4f(BLACK);
+}
+
+
+void drawScene(){
+
+	drawWalls();
+
+	glColor4f(WHITE);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0);
 		glVertex3i(10, 0, 0);
@@ -251,19 +253,16 @@ void Timer(int value)
 
 //======================================================= EVENTOS
 void keyboard(unsigned char key, int x, int y){
-
 	switch (key) {
-	//--------------------------- Projeccao
-	case 'q':
-	case 'Q':
-		defineProj=(defineProj+1)%2;
-		glutPostRedisplay();
-		break;
-	//--------------------------- Escape
-	case 27:
-		exit(0);
-		break;
-  }
+		case 'q':
+		case 'Q':
+			defineProj = (defineProj + 1) % 2;
+			glutPostRedisplay();
+			break;
+		case 27:	// ESC
+			exit(0);
+			break;
+  	}
 }
 
 void teclasNotAscii(int key, int x, int y){
@@ -280,6 +279,7 @@ void teclasNotAscii(int key, int x, int y){
 		obsP[1]= yC;
     if (obsP[1]<-yC)
 		obsP[1]=-yC;
+
     obsP[0] = raio*cos(angulo);
 	obsP[2] = raio*sin(angulo);
 
@@ -293,7 +293,7 @@ int main(int argc, char** argv){
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 	glutInitWindowSize (wScreen, hScreen);
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow ("{jh,pjmm}@dei.uc.pt-CG ::::::::::::::: (left,right,up,down, 'q', 'r', 't)' ");
+	glutCreateWindow ("CUBO RUBIK");
 
 	init();
 
