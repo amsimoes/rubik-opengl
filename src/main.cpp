@@ -16,7 +16,7 @@
 #define RED 	 1.0, 0.0, 0.0, 1.0
 #define YELLOW   1.0, 1.0, 0.0, 1.0
 #define GREEN    0.0, 1.0, 0.0, 1.0
-#define ORANGE   1.0, 0.5, 0.1, 1.0
+#define ORANGE   1.0, cubeSize, 0.1, 1.0
 #define WHITE    1.0, 1.0, 1.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define GRAY     0.9, 0.92, 0.29, 1.0
@@ -40,6 +40,7 @@ GLfloat  incy   = 0.5;
 GLfloat  inca   = 0.03;
 GLfloat  angBule = 0;
 GLfloat  incBule = 1;
+GLfloat  cubeSize = 2.5;
 
 //------------------------------------------------------------ Texturas
 GLint    repete=1;
@@ -51,42 +52,102 @@ GLint    msec=10;					//.. definicao do timer (actualizacao)
 //=========================================================================== INIT
 //------------------------------------------------------------ Texturas
 GLuint  texture[10];
+GLuint cube_textures[6];
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
 
 
-void criaDefineTexturas()
+void loadTextures()
 {
-	//----------------------------------------- Chao y=0
-	glGenTextures(1, &texture[1]);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	// YELLOW
+	glGenTextures(1, &cube_textures[0]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[0]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	imag.LoadBmpFile("../assets/texturas_cubo/amarelo.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
 	imag.GetNumCols(),
 		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 		imag.ImageData());
-	//----------------------------------------- Parede z=0
-	glGenTextures(1, &texture[3]);
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
+
+	// WHITE
+	glGenTextures(1, &cube_textures[1]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[1]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	imag.LoadBmpFile("../assets/texturas_cubo/branco.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+	imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
+
+	// RED
+	glGenTextures(1, &cube_textures[2]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[2]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	imag.LoadBmpFile("../assets/texturas_cubo/vermelho.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+	imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
+
+	// ORANGE
+	glGenTextures(1, &cube_textures[3]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[3]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	imag.LoadBmpFile("../assets/texturas_cubo/laranja.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
 	imag.GetNumCols(),
 		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 		imag.ImageData());
-	//----------------------------------------- Parede x=0
-	glGenTextures(1, &texture[4]);
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
+
+	// BLUE
+	glGenTextures(1, &cube_textures[4]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[4]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	imag.LoadBmpFile("../assets/texturas_cubo/azul.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+	imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
+
+	// GREEN
+	glGenTextures(1, &cube_textures[5]);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[5]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+	imag.GetNumCols(),
+		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		imag.ImageData());
+
+
+	// WALL TEST
+	glGenTextures(1, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -104,7 +165,7 @@ void init(void)
 {
 	glClearColor(BLACK);
 	glShadeModel(GL_SMOOTH);
-	criaDefineTexturas( );
+	loadTextures( );
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 }
@@ -118,9 +179,10 @@ void resizeWindow(GLsizei w, GLsizei h)
 }
 
 void drawWalls() {
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[1]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0 );
@@ -132,7 +194,7 @@ void drawWalls() {
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Teto y=xC
 	glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[1]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  xC, 0 );
@@ -144,7 +206,7 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 	// Parede z=0
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[3]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0);
@@ -156,7 +218,7 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 	// Parede z=xC
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[3]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( xC,  0, 0);
@@ -168,7 +230,7 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 	// Parede x=0
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[4]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0);
@@ -180,7 +242,7 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 	// Parede x=0
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,texture[4]);
+	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, xC);
@@ -192,11 +254,124 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 }
 
+void drawCube(GLfloat xCubeSize, GLfloat yCubeSize, GLfloat zCubeSize) {
+	// Lado branco - FRENTE
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[0]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); 
+			glVertex3f(  xCubeSize, -yCubeSize, zCubeSize );
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f(  xCubeSize,  yCubeSize, zCubeSize );
+			glTexCoord2f(1.0f,1.0f); 
+			glVertex3f( -xCubeSize,  yCubeSize, zCubeSize );
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( -xCubeSize, -yCubeSize, zCubeSize );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+ 
+	// Lado roxo - DIREITA
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[1]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); 
+			glVertex3f( xCubeSize, -yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f( xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( xCubeSize,  yCubeSize,  zCubeSize );
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( xCubeSize, -yCubeSize,  zCubeSize );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+ 
+	// Lado verde - ESQUERDA
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[2]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f( -xCubeSize, -yCubeSize,  zCubeSize );
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f( -xCubeSize,  yCubeSize,  zCubeSize );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
+	// Lado azul - TOPO
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[3]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  xCubeSize,  yCubeSize,  zCubeSize );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -xCubeSize,  yCubeSize,  zCubeSize );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
+	// Lado vermelho - BASE
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[4]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  xCubeSize, -yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  xCubeSize, -yCubeSize,  zCubeSize );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -xCubeSize, -yCubeSize,  zCubeSize );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
+		glEnd();
+	glPopMatrix(); 
+	glDisable(GL_TEXTURE_2D);
+
+	//
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[5]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  xCubeSize, -yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void drawRubiks() {
+	for(int i=0; i<3; i++){
+		for(int j=0; j<3; j++){
+			for(int k=0; k<3; k++){
+				drawCube(cubeSize,cubeSize,cubeSize);
+				glTranslatef(i*cubeSize+0.5, j*cubeSize+0.5, k*cubeSize+0.5);
+			}
+		}
+	}
+}
 void drawScene(){
 
-	drawWalls();
-
+	//drawWalls();
+	drawRubiks();
 	glColor4f(WHITE);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0);
