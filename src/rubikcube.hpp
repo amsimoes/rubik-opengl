@@ -18,10 +18,10 @@ class RubikCube {
 		int cube_size;
 		float rotationAngle;
 
-		int*** cube_color;
-
 	public:
 		int highlight;
+		int*** cube_color;
+		
 		RubikCube(int size=3);
 		~RubikCube();
 

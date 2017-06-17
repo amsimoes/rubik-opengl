@@ -182,13 +182,13 @@ void resizeWindow(GLsizei w, GLsizei h)
 	glutPostRedisplay();
 }
 
-void drawWalls(float trans_constant, float trans_j, float trans_k) {
+void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k) {
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
 	glPushMatrix();
 		glTranslatef(trans_j, trans_constant*-1.0f, trans_k);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[4][j][k]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  -xC, -xC );
 			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, -xC, -xC );
@@ -202,7 +202,7 @@ void drawWalls(float trans_constant, float trans_j, float trans_k) {
 	glPushMatrix();
 		glTranslatef(trans_j, trans_constant, trans_k);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[5][j][k]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  xC, -xC );
 			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, xC, -xC );
@@ -216,7 +216,7 @@ void drawWalls(float trans_constant, float trans_j, float trans_k) {
 	glPushMatrix();
 		glTranslatef(-trans_constant, trans_k, trans_j);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[2][k][j]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f); glVertex3i( -xC, -xC, -xC);
 			glTexCoord2f(1.0f, 0.0f); glVertex3i( -xC, xC, -xC);
@@ -230,7 +230,7 @@ void drawWalls(float trans_constant, float trans_j, float trans_k) {
 	glPushMatrix();
 		glTranslatef(trans_constant, trans_k, trans_j);	
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[3][k][j]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( xC,  -xC, -xC);
 			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, xC, -xC);
@@ -244,7 +244,7 @@ void drawWalls(float trans_constant, float trans_j, float trans_k) {
 	glPushMatrix();
 		glTranslatef(trans_k, trans_j, -trans_constant);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[0][k][j]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  -xC, -xC);
 			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC, xC, -xC);
@@ -258,7 +258,7 @@ void drawWalls(float trans_constant, float trans_j, float trans_k) {
 	glPushMatrix();
 		glTranslatef(trans_k, trans_j, trans_constant);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[1][k][j]]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC, -xC, xC);
 			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC, xC, xC);
@@ -291,14 +291,13 @@ void drawScene(){
 
 	for (int i=1; i >= -1; i--) {
 		for (int j=1; j >= -1; j--) {
-			printf("trans_constant = %f\n", trans_constant);
-			printf("trans = %f\n", trans);
-			printf("trans * %d = %f\n", i, trans*i);
-			printf("trans * %d = %f\n", j, trans*j);
-			drawWalls(trans_constant, trans*i, trans*j);
+			// 1-i , 1-j
+
+			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
 		}	
 	}
 
+	//printf("cube_color[0][1][1] = %d\n", rubik.cube_color[1][1][1]);
 	//drawLines();
 
 }
