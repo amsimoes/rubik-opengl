@@ -28,7 +28,7 @@
 
 //------------------------------------------------------------ Sistema Coordenadas
 GLfloat   xC=15.0, yC=15.0, zC=30.0;
-GLfloat		xZ=30.0, yZ=30.0, zZ=0.0;
+GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
 
 //------------------------------------------------------------ Observador
@@ -189,70 +189,75 @@ void drawWalls() {
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0 );
-			glTexCoord2f(10.0f,0.0f); glVertex3i( xC, 0, 0 );
-			glTexCoord2f(10.0f,10.0f); glVertex3i( xC, 0, xC);
-			glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  0,  xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC/2,  -xC/2, -xC/2 );
+			glTexCoord2f(1.0f,0.0f); glVertex3i( xC/2, -xC/2, -xC/2 );
+			glTexCoord2f(1.0f,1.0f); glVertex3i( xC/2, -xC/2, xC/2);
+			glTexCoord2f(0.0f,1.0f); glVertex3i( -xC/2,  -xC/2,  xC/2);
 		glEnd();
 	glPopMatrix();
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Teto y=xC
 	glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  xC, 0 );
-			glTexCoord2f(10.0f,0.0f); glVertex3i( xC, xC, 0 );
-			glTexCoord2f(10.0f,10.0f); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,10.0f); glVertex3i( 0,  xC,  xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC/2,  xC/2, -xC/2 );
+			glTexCoord2f(1.0f,0.0f); glVertex3i( xC/2, xC/2, -xC/2 );
+			glTexCoord2f(1.0f,1.0f); glVertex3i( xC/2, xC/2, xC/2);
+			glTexCoord2f(0.0f,1.0f); glVertex3i( -xC/2,  xC/2,  xC/2);
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+
 	// Parede z=0
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0);
-			glTexCoord2f(3.0f+azulejo%5,0.0f); glVertex3i( 0, xC, 0);
-			glTexCoord2f(3.0f+azulejo%5,3.0f+azulejo%5); glVertex3i( 0, xC, xC);
-			glTexCoord2f(0.0f,3.0f+azulejo%5); glVertex3i( 0,  0, xC);
+			glTexCoord2f(0.0f, 0.0f); glVertex3i( -xC/2, -xC/2, -xC/2);
+			glTexCoord2f(1.0f, 0.0f); glVertex3i( -xC/2, xC/2, -xC/2);
+			glTexCoord2f(1.0f, 1.0f); glVertex3i( -xC/2, xC/2, xC/2);
+			glTexCoord2f(0.0f, 1.0f); glVertex3i( -xC/2,  -xC/2, xC/2);
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+
 	// Parede z=xC
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( xC,  0, 0);
-			glTexCoord2f(3.0f+azulejo%5,0.0f); glVertex3i( xC, xC, 0);
-			glTexCoord2f(3.0f+azulejo%5,3.0f+azulejo%5); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,3.0f+azulejo%5); glVertex3i( xC,  0, xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3i( xC/2,  -xC/2, -xC/2);
+			glTexCoord2f(1.0f,0.0f); glVertex3i( xC/2, xC/2, -xC/2);
+			glTexCoord2f(1.0f,1.0f); glVertex3i( xC/2, xC/2, xC/2);
+			glTexCoord2f(0.0f,1.0f); glVertex3i( xC/2,  -xC/2, xC/2);
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+
 	// Parede x=0
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, 0);
-			glTexCoord2f(3.0f,0.0f); glVertex3i( 0, xC, 0);
-			glTexCoord2f(3.0f,3.0f); glVertex3i( xC, xC, 0);
-			glTexCoord2f(0.0f,3.0f); glVertex3i( xC,  0, 0);
+			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC/2,  -xC/2, -xC/2);
+			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC/2, xC/2, -xC/2);
+			glTexCoord2f(1.0f,1.0f); glVertex3i( xC/2, xC/2, -xC/2);
+			glTexCoord2f(0.0f,1.0f); glVertex3i( xC/2,  -xC/2, -xC/2);
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+
 	// Parede x=0
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[0]);
 	glPushMatrix();
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( 0,  0, xC);
-			glTexCoord2f(3.0f,0.0f); glVertex3i( 0, xC, xC);
-			glTexCoord2f(3.0f,3.0f); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,3.0f); glVertex3i( xC,  0, xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC/2, -xC/2, xC/2);
+			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC/2, xC/2, xC/2);
+			glTexCoord2f(1.0f,1.0f); glVertex3i( xC/2, xC/2, xC/2);
+			glTexCoord2f(0.0f,1.0f); glVertex3i( xC/2, -xC/2, xC/2);
 		glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
@@ -276,7 +281,7 @@ void drawLines() {
 
 void drawScene(){
 
-	//drawWalls();
+	drawWalls();
 	//drawLines();
 
 }
@@ -294,7 +299,7 @@ void display(void){
 	glLoadIdentity();
 	switch (defineProj) {
 		case 1: gluPerspective(88.0, wScreen/hScreen, 0.1, zC); break;
-		default: glOrtho (-xC,xC,-yC,yC,-zC,zC);
+		default: glOrtho (-xC/2,xC/2,-yC/2,yC/2,-zC/2,zC/2);
 			break;
 	}
 
@@ -330,35 +335,56 @@ void keyboard(unsigned char key, int x, int y){
 			break;
 
 		case '1':	// FRONT: LEFT <-
+			rubik.highlight = 0;
+			glutPostRedisplay();
 			rubik.glRotate();
 			break;
 		case '2':	// FRONT: RIGHT ->
+			rubik.highlight = 1;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '3':	// LEFT: LEFT <-
+			rubik.highlight = 2;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '4':   // LEFT: RIGHT ->
+			rubik.highlight = 3;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '5':   // RIGHT: LEFT <-
+			rubik.highlight = 4;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '6':   // RIGHT: RIGHT ->
+			rubik.highlight = 5;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '7':   // BACK: LEFT <-
+			rubik.highlight = 6;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '8':   // BACK: RIGHT ->
+			rubik.highlight = 7;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '9':   // TOP: LEFT <-
+			rubik.highlight = 8;
+			glutPostRedisplay();
+			rubik.glRotate();
 			break;
 		case '0':   // TOP: RIGHT ->
-			break;
-		case 'o':   // BOTTOM: LEFT <-
-		case 'O':
-			break;
-		case 'p':   // BOTTOM: RIGHT ->
-		case 'P':
 			break;
 
 		case ' ':
 			rubik.highlightNext();
+			printf("highlight = %d\n", rubik.highlight);
 			glutPostRedisplay();
 			break;
 

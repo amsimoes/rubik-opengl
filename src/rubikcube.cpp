@@ -50,7 +50,7 @@ void RubikCube::resetColors() {
 		}
 	}
 }
-
+		
 void RubikCube::glDisplay() {
 	glDisable(GL_TEXTURE_2D);
 
