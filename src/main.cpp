@@ -9,7 +9,7 @@
 #endif
 
 #include "RgbImage.h"
-
+#include "rubikcube.hpp"
 
 //--------------------------------- Definir cores
 #define BLUE     0.0, 0.0, 1.0, 1.0
@@ -254,126 +254,7 @@ void drawWalls() {
 	glDisable(GL_TEXTURE_2D);
 }
 
-void drawCube(GLfloat xCubeSize, GLfloat yCubeSize, GLfloat zCubeSize) {
-	// Lado branco - FRENTE
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[0]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); 
-			glVertex3f(  xCubeSize, -yCubeSize, zCubeSize );
-			glTexCoord2f(1.0f,0.0f); 
-			glVertex3f(  xCubeSize,  yCubeSize, zCubeSize );
-			glTexCoord2f(1.0f,1.0f); 
-			glVertex3f( -xCubeSize,  yCubeSize, zCubeSize );
-			glTexCoord2f(0.0f,1.0f); 
-			glVertex3f( -xCubeSize, -yCubeSize, zCubeSize );
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
- 
-	// Lado roxo - DIREITA
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[1]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); 
-			glVertex3f( xCubeSize, -yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,0.0f); 
-			glVertex3f( xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f( xCubeSize,  yCubeSize,  zCubeSize );
-			glTexCoord2f(0.0f,1.0f); 
-			glVertex3f( xCubeSize, -yCubeSize,  zCubeSize );
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
- 
-	// Lado verde - ESQUERDA
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[2]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f( -xCubeSize, -yCubeSize,  zCubeSize );
-			glTexCoord2f(1.0f,0.0f); 
-			glVertex3f( -xCubeSize,  yCubeSize,  zCubeSize );
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(0.0f,1.0f); 
-			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-
-	// Lado azul - TOPO
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[3]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(  xCubeSize,  yCubeSize,  zCubeSize );
-			glTexCoord2f(1.0f,0.0f);
-			glVertex3f(  xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(0.0f,1.0f);
-			glVertex3f( -xCubeSize,  yCubeSize,  zCubeSize );
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-
-	// Lado vermelho - BASE
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[4]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(  xCubeSize, -yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,0.0f);
-			glVertex3f(  xCubeSize, -yCubeSize,  zCubeSize );
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f( -xCubeSize, -yCubeSize,  zCubeSize );
-			glTexCoord2f(0.0f,1.0f);
-			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
-		glEnd();
-	glPopMatrix(); 
-	glDisable(GL_TEXTURE_2D);
-
-	//
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,cube_textures[5]);
-	glPushMatrix();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(  xCubeSize, -yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,0.0f);
-			glVertex3f(  xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f( -xCubeSize,  yCubeSize, -zCubeSize );
-			glTexCoord2f(0.0f,1.0f);
-			glVertex3f( -xCubeSize, -yCubeSize, -zCubeSize );
-		glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-}
-
-void drawRubiks() {
-	for(int i=0; i<3; i++){
-		for(int j=0; j<3; j++){
-			for(int k=0; k<3; k++){
-				drawCube(cubeSize,cubeSize,cubeSize);
-				glTranslatef(i*cubeSize+0.5, j*cubeSize+0.5, k*cubeSize+0.5);
-			}
-		}
-	}
-}
-void drawScene(){
-
-	//drawWalls();
-	//drawRubiks();
-
-
+void drawLines() {
 	glColor4f(WHITE);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0);
@@ -387,6 +268,12 @@ void drawScene(){
 		glVertex3i( 0, 0, 0);
 		glVertex3i( 0, 0,10);
 	glEnd();
+}
+
+void drawScene(){
+
+	drawWalls();
+	//drawLines();
 
 
 }
@@ -436,6 +323,36 @@ void keyboard(unsigned char key, int x, int y){
 			defineProj = (defineProj + 1) % 2;
 			glutPostRedisplay();
 			break;
+
+		case '1':
+			break;
+		case '2':
+			break;
+		case '3':
+			break;
+		case '4':
+			break;
+		case '5':
+			break;
+		case '6':
+			break;
+		case '7':
+			break;
+		case '8':
+			break;
+		case '9':
+			break;
+		case '0':
+			break;
+		case 'o':
+		case 'O':
+			printf("haha\n");
+			break;
+		case 'p':
+		case 'P':
+			printf("jajjaj\n");
+			break;
+
 		case 27:	// ESC
 			exit(0);
 			break;

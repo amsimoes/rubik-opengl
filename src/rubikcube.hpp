@@ -14,6 +14,7 @@ enum Color {
 class RubikCube {
 	private:
 		int cube_size;
+		float rotationHigh;
 
 		Color*** face_color;
 
@@ -21,16 +22,16 @@ class RubikCube {
 		RubikCube(int size=3);
 		~RubikCube();
 
-		void glRotate();
+		void glRotate(int msdelay=250, int fps=20);
 		void glDisplay();
 
 	protected:
-		void reset();
+		void resetColors();
 		void rotateColors();
 
 		void glDrawCube(int x, int y, int z,
 			Color front, Color left, Color right, Color back,
-			Color top, Color down);
+			Color top, Color bottom);
 
 		void glSetColor(Color col); 
 };

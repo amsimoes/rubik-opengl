@@ -15,6 +15,7 @@
 
 RubikCube::RubikCube(int cube_size) {	// Constructor
 	this->cube_size = cube_size;
+	this->rotationHigh = 0;
 
 	face_color = new Color**[6];
 
@@ -25,7 +26,7 @@ RubikCube::RubikCube(int cube_size) {	// Constructor
 			face_color[i][j] = new Color[cube_size];
 	}
 
-	reset();
+	resetColors();
 }
 
 RubikCube::~RubikCube() {	// Destructor
@@ -40,7 +41,7 @@ RubikCube::~RubikCube() {	// Destructor
 	delete[] face_color;
 }
 
-void RubikCube::reset_colors() {
+void RubikCube::resetColors() {
 	for (int k=0; k<6; k++) {
 		for (int i=0; i < cube_size; i++) {
 			for (int j=0; j < cube_size; j++) {
@@ -50,16 +51,15 @@ void RubikCube::reset_colors() {
 	}
 }
 
-
 void RubikCube::glDisplay() {
-	glDisable(TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 
 	for (int x=0; x<cube_size; x++) {
 		for (int y=0; y<cube_size; y++) {
 			for (int z=0; z<cube_size; z++) {
 				glPushMatrix();
 
-				glDrawCube(x, y, z)
+				//glDrawCube(x, y, z)
 
 				glPopMatrix();
 			}
@@ -67,16 +67,35 @@ void RubikCube::glDisplay() {
 	}
 }
 
+void RubikCube::glRotate(int msdelay, int fps) {
+	const float framedelay = 1.0 / fps;
+	const float nrFrames = (msdelay / 1000.0) / framedelay;
+	const float degPerFrame = 90.0 / nrFrames;
+	rotationHigh = 0;
 
+	while (rotationHigh < 90.0) {
+		usleep( (int) (framedelay * 1000 * 1000));
+		rotationHigh += degPerFrame;
+		display();
+		glutPostRedisplay();
+	}
 
-void RubikCube::glDrawCube(int x, int y, int z, Color front, Color left, Color right, Color back, Color top, Color down) {
+	rotateColors();
+	rotationHigh = 0;
+} 
+
+void RubikCube::rotateColors() {
+	// piu
+}
+
+void RubikCube::glDrawCube(int x, int y, int z, Color front, Color left, Color right, Color back, Color top, Color bottom) {
 
 	float fx, fy, fz;
 
 	const float elm_size = 1.0 / cube_size;
 	const float gap_faces = 0.01;
 
-	const float esn = es * (1 - 2 * gap_faces);
+	const float esn = elm_size * (1 - 2 * gap_faces);
 
 	fx = x * elm_size - 0.5 + elm_size * gap_faces;
 	fy = y * elm_size - 0.5 + elm_size * gap_faces;
