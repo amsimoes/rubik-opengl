@@ -2,14 +2,14 @@ UNAME := $(shell uname)
 
 CXX = g++
 CXXFLAGS = -Wall -g 
-LIBFLAGS = -lGL -lGLU
+LIBFLAGS = -Wall
 
 ifeq ($(UNAME), Linux)
-  LIBFLAGS += -lglut
+  LIBFLAGS += -lGL -lGLU -lglut
 endif
 ifeq ($(UNAME), Darwin)
-  LIBFLAGS += ...
+  LIBFLAGS += -Wno-deprecated -framework GLUT -framework OpenGL
 endif
 
 rubik: *.cpp
-	g++ -Wall $(LIBFLAGS) *.cpp -o rubik
+	g++ $(LIBFLAGS) *.cpp -o rubik
