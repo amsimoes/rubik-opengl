@@ -1,28 +1,33 @@
 #ifndef RUBIK_H
 #define RUBIK_H
 
+extern GLuint cube_textures[6];
+
 enum Color {
 	black = 0,
-	white,
-	red,
-	green,
-	blue,
-	yellow,
-	orange
+	white,	// BACK   0
+	red,	// FRONT  1
+	green,	// LEFT   2
+	blue,	// RIGHT  3
+	yellow,	// BOTTOM 4
+	orange	// TOP    5
 };
 
 class RubikCube {
 	private:
 		int cube_size;
-		float rotationHigh;
+		float rotationAngle;
 
-		Color*** face_color;
+		int highlight;
+		int*** cube_color;
 
 	public:
 		RubikCube(int size=3);
 		~RubikCube();
 
-		void glRotate(int msdelay=250, int fps=20);
+		void highlightNext()	{ highlight++; highlight %= 3*cube_size;  };
+
+		void glRotate();
 		void glDisplay();
 
 	protected:
@@ -30,10 +35,8 @@ class RubikCube {
 		void rotateColors();
 
 		void glDrawCube(int x, int y, int z,
-			Color front, Color left, Color right, Color back,
-			Color top, Color bottom);
-
-		void glSetColor(Color col); 
+			int front, int left, int right, int back,
+			int top, int bottom);
 };
 
 #endif

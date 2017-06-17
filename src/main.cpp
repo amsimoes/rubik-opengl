@@ -10,6 +10,7 @@
 
 #include "RgbImage.h"
 #include "rubikcube.hpp"
+#include "main.hpp"
 
 //--------------------------------- Definir cores
 #define BLUE     0.0, 0.0, 1.0, 1.0
@@ -51,11 +52,14 @@ GLint    msec=10;					//.. definicao do timer (actualizacao)
 //================================================================================
 //=========================================================================== INIT
 //------------------------------------------------------------ Texturas
-GLuint  texture[10];
+
 GLuint cube_textures[6];
+GLuint  texture[10];
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
+
+RubikCube rubik(3);
 
 
 void loadTextures()
@@ -126,9 +130,9 @@ void loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	imag.LoadBmpFile("../assets/texturas_cubo/azul.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());
+			imag.GetNumCols(),
+			imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+			imag.ImageData());
 
 	// GREEN
 	glGenTextures(1, &cube_textures[5]);
@@ -140,9 +144,9 @@ void loadTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());
+			imag.GetNumCols(),
+			imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+			imag.ImageData());
 
 
 	// WALL TEST
@@ -272,9 +276,8 @@ void drawLines() {
 
 void drawScene(){
 
-	drawWalls();
+	//drawWalls();
 	//drawLines();
-
 
 }
 
@@ -303,6 +306,8 @@ void display(void){
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
 	drawScene();
 
+	rubik.glDisplay();
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
 	glutSwapBuffers();
 }
@@ -324,33 +329,41 @@ void keyboard(unsigned char key, int x, int y){
 			glutPostRedisplay();
 			break;
 
-		case '1':
+		case '1':	// FRONT: LEFT <-
+			rubik.glRotate();
 			break;
-		case '2':
+		case '2':	// FRONT: RIGHT ->
 			break;
-		case '3':
+		case '3':	// LEFT: LEFT <-
 			break;
-		case '4':
+		case '4':   // LEFT: RIGHT ->
 			break;
-		case '5':
+		case '5':   // RIGHT: LEFT <-
 			break;
-		case '6':
+		case '6':   // RIGHT: RIGHT ->
 			break;
-		case '7':
+		case '7':   // BACK: LEFT <-
 			break;
-		case '8':
+		case '8':   // BACK: RIGHT ->
 			break;
-		case '9':
+		case '9':   // TOP: LEFT <-
 			break;
-		case '0':
+		case '0':   // TOP: RIGHT ->
 			break;
-		case 'o':
+		case 'o':   // BOTTOM: LEFT <-
 		case 'O':
-			printf("haha\n");
 			break;
-		case 'p':
+		case 'p':   // BOTTOM: RIGHT ->
 		case 'P':
-			printf("jajjaj\n");
+			break;
+
+		case ' ':
+			rubik.highlightNext();
+			glutPostRedisplay();
+			break;
+
+		case 13:
+			rubik.glRotate();
 			break;
 
 		case 27:	// ESC

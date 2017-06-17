@@ -15,15 +15,15 @@
 
 RubikCube::RubikCube(int cube_size) {	// Constructor
 	this->cube_size = cube_size;
-	this->rotationHigh = 0;
+	this->rotationAngle = 0;
 
-	face_color = new Color**[6];
+	cube_color = new int**[6];
 
 	for (int i=0; i < 6; i++) {
-		face_color[i] = new Color*[cube_size];
+		cube_color[i] = new int*[cube_size];
 
 		for (int j=0; j < cube_size; j++)
-			face_color[i][j] = new Color[cube_size];
+			cube_color[i][j] = new int[cube_size];
 	}
 
 	resetColors();
@@ -32,20 +32,20 @@ RubikCube::RubikCube(int cube_size) {	// Constructor
 RubikCube::~RubikCube() {	// Destructor
 	for (int i=0; i<6; i++) {
 		for (int j=0; j<cube_size; j++) {
-			delete[] face_color[i][j];
+			delete[] cube_color[i][j];
 		}
 
-		delete[] face_color[i];
+		delete[] cube_color[i];
 	}
 
-	delete[] face_color;
+	delete[] cube_color;
 }
 
 void RubikCube::resetColors() {
 	for (int k=0; k<6; k++) {
 		for (int i=0; i < cube_size; i++) {
 			for (int j=0; j < cube_size; j++) {
-				face_color[k][i][j] = static_cast<Color>( 1+k );
+				cube_color[k][i][j] = k;
 			}
 		}
 	}
@@ -57,9 +57,30 @@ void RubikCube::glDisplay() {
 	for (int x=0; x<cube_size; x++) {
 		for (int y=0; y<cube_size; y++) {
 			for (int z=0; z<cube_size; z++) {
+				/*enlight = 	highdim==0 && highnr == x ||
+							highdim==1 && highnr == y ||
+							highdim==2 && highnr == z;
+
+				//Rotate highlighted slice
+				if( enlight )
+				{
+						if( highdim==0 )
+							glRotatef(-rothigh, 1, 0, 0);
+						if( highdim==1 )
+							glRotatef(-rothigh, 0, -1, 0);
+						if( highdim==2 )
+							glRotatef(-rothigh, 0, 0, 1);
+				}*/
+
 				glPushMatrix();
 
-				//glDrawCube(x, y, z)
+				glDrawCube(x, y, z,
+					cube_color[0][x][y],
+					cube_color[1][x][y],
+					cube_color[2][y][z],
+					cube_color[3][y][z],
+					cube_color[4][x][z],
+					cube_color[5][x][z]);
 
 				glPopMatrix();
 			}
@@ -67,156 +88,262 @@ void RubikCube::glDisplay() {
 	}
 }
 
-void RubikCube::glRotate(int msdelay, int fps) {
-	const float framedelay = 1.0 / fps;
-	const float nrFrames = (msdelay / 1000.0) / framedelay;
-	const float degPerFrame = 90.0 / nrFrames;
-	rotationHigh = 0;
+/*
+	BACK -> 0
+	FRONT -> 1
+	LEFT -> 2
+	RIGHT -> 3
+	BOTTOM -> 4
+	TOP -> 5
+	------------
+	DIRECTION:
+	ANTI CLOCKWISE = 0
+	CLOCKWISE = 1
+*/
 
-	while (rotationHigh < 90.0) {
-		usleep( (int) (framedelay * 1000 * 1000));
-		rotationHigh += degPerFrame;
+void RubikCube::rotateColors()
+{
+	int size = cube_size;
+
+	//Get the dimension - its orthogonal complement is parallel to the highlighted slice
+	int highdim = highlight / size;
+	//The number of slice in this dimension
+	int highnr = highlight % size;
+
+	//Rotate in x-direction (Rotate back, front, ., ., bottom, top)
+	//x-coord is highnr
+	if( highdim == 0 ) {
+		int* save = new int[size];
+		memcpy(save, cube_color[4][highnr], sizeof(int)*size);
+
+		//Back --> Bottom
+		for( int i=0; i< size; i++ )
+			cube_color[4][highnr][i] = cube_color[0][highnr][size-1-i];
+
+		//Top --> Back
+		for( int i=0; i< size; i++ )
+			cube_color[0][highnr][i] = cube_color[5][highnr][i];
+
+		//Front --> Top
+		for( int i=0; i< size; i++ )
+			cube_color[5][highnr][i] = cube_color[1][highnr][size-1-i];
+
+		//Bottom --> Front
+		for( int i=0; i< size; i++ )
+			cube_color[1][highnr][i] = save[i];
+
+		delete [] save;
+	}
+
+	//Rotate in y-direction (Rotate back, front, left, right, ., .)
+	//y-coord is highnr
+	if( highdim == 1 ) {
+		int* save = new int[size];
+		memcpy(save, cube_color[3][highnr], sizeof(int)*size);
+
+		//Front --> Right
+		for( int i=0; i< size; i++ )
+			cube_color[3][highnr][i] = cube_color[1][size-1-i][highnr];
+
+		//Left --> Front
+		for( int i=0; i< size; i++ )
+			cube_color[1][i][highnr] = cube_color[2][highnr][i];
+
+		//Back --> Left
+		for( int i=0; i< size; i++ )
+			cube_color[2][highnr][i] = cube_color[0][size-1-i][highnr];
+
+		//Right --> Back
+		for( int i=0; i< size; i++ )
+			cube_color[0][i][highnr] = save[i];
+
+
+		delete [] save;
+	}
+
+	//Rotate in z-direction (Rotate ., ., left, right, bottom, top)
+	//z-coord is highnr
+	if( highdim == 2 ) {
+		int* save = new int[size];
+		
+		for( int i=0; i< size; i++ )
+			save[i] = cube_color[5][i][highnr];
+
+		//Left --> Top
+		for( int i=0; i< size; i++ )
+			cube_color[5][i][highnr] = cube_color[2][i][highnr];
+
+		//Bottom --> Left
+		for( int i=0; i< size; i++ )
+			cube_color[2][i][highnr] = cube_color[4][size-1-i][highnr];
+
+		//Right --> Bottom
+		for( int i=0; i< size; i++ )
+			cube_color[4][i][highnr] = cube_color[3][i][highnr];
+
+		// Top --> Right
+		for( int i=0; i< size; i++ )
+			cube_color[3][i][highnr] = save[size-1-i];
+
+		delete [] save;
+	}
+
+	//Rotate a side of cube
+	if( highnr == 0 || highnr == size-1 ) {
+		int side;
+
+		//Get the side
+		if( highdim==0 )
+			side = highnr == 0 ? 2 : 3;
+		if( highdim==1 )
+			side = highnr == 0 ? 4 : 5;
+		if( highdim==2 )
+			side = highnr == 0 ? 0 : 1;
+
+
+		//Save old values
+		int** save = new int*[size];			
+
+		//Save content
+		for(int i=0; i<size; i++)
+		{
+			save[i] = new int[size];
+			for(int j=0; j<size; j++)
+				save[i][j] = cube_color[side][i][j];
+		}
+				
+		//Rotate data
+		for( int j=0; j<size; j++)
+		{
+			for( int i=0; i<size; i++)
+				cube_color[side][i][j] = save[size-1-j][i];
+
+			delete[] save[size-1-j];
+		}
+
+		delete[] save;
+	}
+}
+
+void RubikCube::glRotate() {
+
+	while (rotationAngle < 90.0) {
+		rotationAngle += 10;
 		display();
 		glutPostRedisplay();
 	}
 
 	rotateColors();
-	rotationHigh = 0;
+	rotationAngle = 0;
 } 
 
-void RubikCube::rotateColors() {
-	// piu
-}
+void RubikCube::glDrawCube(int x, int y, int z, int back, int front, int left, int right, int bottom, int top) {
+	int size = 1.5;
 
-void RubikCube::glDrawCube(int x, int y, int z, Color front, Color left, Color right, Color back, Color top, Color bottom) {
-
-	float fx, fy, fz;
-
-	const float elm_size = 1.0 / cube_size;
-	const float gap_faces = 0.01;
-
-	const float esn = elm_size * (1 - 2 * gap_faces);
-
-	fx = x * elm_size - 0.5 + elm_size * gap_faces;
-	fy = y * elm_size - 0.5 + elm_size * gap_faces;
-	fz = z * elm_size - 0.5 + elm_size * gap_faces;
+	glPushMatrix();
+	glTranslatef(x*(size*2), y*(size*2), z*(size*2));
 
 
-	// Front face
-	glBegin(GL_QUADS);
-		glSetColor(front);
-		glNormal3f(0, 0, 1);
-		glVertex3f(fx + 0.0, fy + 0.0, fz + esn);
-		glVertex3f(fx + esn, fy + 0.0, fz + esn);
-		glVertex3f(fx + esn, fy + esn, fz + esn);
-		glVertex3f(fx + 0.0, fy + esn, fz + esn);
-	glEnd();
+	// YELLOW
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, cube_textures[front]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); 
+			glVertex3f( size, -size, size);
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f(  size, size, size);
+			glTexCoord2f(1.0f,1.0f); 
+			glVertex3f( -size, size, size);
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( -size, -size, size);
+		glEnd();
+	glPopMatrix();
 
-	// Left face
-	glBegin(GL_QUADS);
-		glSetColor(left);
-		glNormal3f( -1, 0, 0 );
-		glVertex3f( fx + 0.0, fy + 0.0, fz + 0.0);
-		glVertex3f( fx + 0.0, fy + 0.0, fz + esn);
-		glVertex3f( fx + 0.0, fy + esn, fz + esn);
-		glVertex3f( fx + 0.0, fy + esn, fz + 0.0);
-	glEnd();
+	// Lado roxo - DIREITA
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[right]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); 
+			glVertex3f( size, -size, -size );
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f( size,  size, -size );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( size,  size,  size );
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( size, -size,  size );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+	
+	// Lado verde - ESQUERDA
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[left]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f( -size, -size,  size );
+			glTexCoord2f(1.0f,0.0f); 
+			glVertex3f( -size,  size,  size );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -size,  size, -size );
+			glTexCoord2f(0.0f,1.0f); 
+			glVertex3f( -size, -size, -size );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
-	// Right face
-	glBegin(GL_QUADS);
-		glSetColor(right);
-		glNormal3f( 1, 0, 0 );
-		glVertex3f( fx + esn, fy + 0.0, fz + 0.0);
-		glVertex3f( fx + esn, fy + esn, fz + 0.0);
-		glVertex3f( fx + esn, fy + esn, fz + esn);
-		glVertex3f( fx + esn, fy + 0.0, fz + esn);
-	glEnd();	
+	// Lado azul - TOPO
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[top]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  size,  size,  size );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  size,  size, -size );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -size,  size, -size );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -size,  size,  size );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
-	// Back face
-	glBegin(GL_QUADS);
-		glSetColor(back);
-		glNormal3f( 0, 0, -1 );
-		glVertex3f( fx + 0.0, fy + 0.0, fz + 0.0);
-		glVertex3f( fx + 0.0, fy + esn, fz + 0.0);
-		glVertex3f( fx + esn, fy + esn, fz + 0.0);
-		glVertex3f( fx + esn, fy + 0.0, fz + 0.0);
-	glEnd();
-
-	// Top face
-	glBegin(GL_QUADS);
-		glSetColor(top);
-		glNormal3f( 0, 0, 1 );
-		glVertex3f( fx + 0.0, fy + esn, fz + 0.0);
-		glVertex3f( fx + 0.0, fy + esn, fz + esn);
-		glVertex3f( fx + esn, fy + esn, fz + esn);
-		glVertex3f( fx + esn, fy + esn, fz + 0.0);
-	glEnd();
-
-	// Bottom face
-	glBegin(GL_QUADS);
-		glSetColor(bottom);
-		glNormal3f( 0, 0, -1 );
-		glVertex3f( fx + 0.0, fy + 0.0, fz + 0.0);
-		glVertex3f( fx + esn, fy + 0.0, fz + 0.0);
-		glVertex3f( fx + esn, fy + 0.0, fz + esn);
-		glVertex3f( fx + 0.0, fy + 0.0, fz + esn);
-	glEnd();
-
-}
-
-void RubikCube::glSetColor(Color color) {
-	static float mat_rgb[] = {0, 0, 0, 1};
-	static float actual_rgb[] = {0, 0, 0, 1};
-
-	switch (color) {
-		case black:
-			mat_rgb[0] = 0.4;
-			mat_rgb[1] = 0.4;
-			mat_rgb[2] = 0.4;
-			break;
-		case white:
-			mat_rgb[0] = 1;
-			mat_rgb[1] = 1;
-			mat_rgb[2] = 1;
-			break;
-		case red:
-			mat_rgb[0] = 1;
-			mat_rgb[1] = 0;
-			mat_rgb[2] = 0;
-			break;	
-		case green:
-			mat_rgb[0] = 0;
-			mat_rgb[1] = 1;
-			mat_rgb[2] = 0;
-			break;
-		case blue:
-			mat_rgb[0] = 0;
-			mat_rgb[1] = 0;
-			mat_rgb[2] = 1;
-			break;
-		case yellow:
-			mat_rgb[0] = 0;
-			mat_rgb[1] = 1;
-			mat_rgb[2] = 1;
-			break;
-		case orange:
-			mat_rgb[0] = 1;
-			mat_rgb[1] = 0.6;
-			mat_rgb[2] = 0;
-			break;
-	}
-
-	actual_rgb[0] = mat_rgb[0];
-	actual_rgb[1] = mat_rgb[1];
-	actual_rgb[2] = mat_rgb[2];
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, actual_rgb);
-
-	actual_rgb[0] = 0.1*mat_rgb[0];
-	actual_rgb[1] = 0.1*mat_rgb[1];
-	actual_rgb[2] = 0.1*mat_rgb[2];
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, actual_rgb);
+	// Lado vermelho - BASE
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[bottom]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  size, -size, -size );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  size, -size,  size );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -size, -size,  size );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -size, -size, -size );
+		glEnd();
+	glPopMatrix(); 
+	glDisable(GL_TEXTURE_2D);
 
 
-	actual_rgb[0] = actual_rgb[1] = actual_rgb[2] = 0;
-	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, actual_rgb);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,cube_textures[back]);
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(  size, -size, -size );
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(  size,  size, -size );
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f( -size,  size, -size );
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f( -size, -size, -size );
+		glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
 }
