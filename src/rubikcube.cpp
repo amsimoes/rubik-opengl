@@ -54,25 +54,29 @@ void RubikCube::resetColors() {
 void RubikCube::glDisplay() {
 	glDisable(GL_TEXTURE_2D);
 
+	int highdim = highlight / cube_size;
+	int highnr = highlight % cube_size;
+	bool enlight;
+
 	for (int x=0; x<cube_size; x++) {
 		for (int y=0; y<cube_size; y++) {
 			for (int z=0; z<cube_size; z++) {
-				/*enlight = 	highdim==0 && highnr == x ||
+
+				enlight = highdim==0 && highnr == x ||
 							highdim==1 && highnr == y ||
 							highdim==2 && highnr == z;
 
-				//Rotate highlighted slice
-				if( enlight )
-				{
-						if( highdim==0 )
-							glRotatef(-rothigh, 1, 0, 0);
-						if( highdim==1 )
-							glRotatef(-rothigh, 0, -1, 0);
-						if( highdim==2 )
-							glRotatef(-rothigh, 0, 0, 1);
-				}*/
-
 				glPushMatrix();
+
+				//Rotate highlighted slice
+				if (enlight) {
+					if (highdim == 0)
+						glRotatef(-rotationAngle, 1, 0, 0);
+					if (highdim == 1)
+						glRotatef(-rotationAngle, 0, -1, 0);
+					if (highdim == 2)
+						glRotatef(-rotationAngle, 0, 0, 1);
+				}
 
 				glDrawCube(x, y, z,
 					cube_color[0][x][y],
@@ -226,9 +230,10 @@ void RubikCube::rotateColors()
 }
 
 void RubikCube::glRotate() {
+	rotationAngle = 0;
 
 	while (rotationAngle < 90.0) {
-		rotationAngle += 10;
+		rotationAngle += 5;
 		display();
 		glutPostRedisplay();
 	}
@@ -241,7 +246,7 @@ void RubikCube::glDrawCube(int x, int y, int z, int back, int front, int left, i
 	int size = 1.5;
 
 	glPushMatrix();
-	glTranslatef(x*(size*2), y*(size*2), z*(size*2));
+	glTranslatef(-size*2+x*(size*2), -size*2+y*(size*2), -size*2+z*(size*2));
 
 
 	// YELLOW
