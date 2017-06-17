@@ -13,7 +13,7 @@
 #include "main.hpp"
 
 
-RubikCube::RubikCube(int cube_size) {
+RubikCube::RubikCube(int cube_size) {	// Constructor
 	this->cube_size = cube_size;
 
 	face_color = new Color**[6];
@@ -28,7 +28,7 @@ RubikCube::RubikCube(int cube_size) {
 	reset();
 }
 
-RubikCube::~RubikCube() {
+RubikCube::~RubikCube() {	// Destructor
 	for (int i=0; i<6; i++) {
 		for (int j=0; j<cube_size; j++) {
 			delete[] face_color[i][j];
@@ -66,6 +66,8 @@ void RubikCube::glDisplay() {
 		}
 	}
 }
+
+
 
 void RubikCube::glDrawCube(int x, int y, int z, Color front, Color left, Color right, Color back, Color top, Color down) {
 
@@ -180,8 +182,8 @@ void RubikCube::glSetColor(Color color) {
 			break;
 		case orange:
 			mat_rgb[0] = 1;
-			mat_rgb[1] = 0;
-			mat_rgb[2] = 1;
+			mat_rgb[1] = 0.6;
+			mat_rgb[2] = 0;
 			break;
 	}
 
