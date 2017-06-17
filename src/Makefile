@@ -11,5 +11,5 @@ ifeq ($(UNAME), Darwin)
   LIBFLAGS += ...
 endif
 
-rubik: main.cpp
+rubik: *.cpp
 	g++ -Wall $(LIBFLAGS) *.cpp -o rubik

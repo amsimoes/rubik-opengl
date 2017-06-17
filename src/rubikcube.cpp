@@ -62,9 +62,9 @@ void RubikCube::glDisplay() {
 		for (int y=0; y<cube_size; y++) {
 			for (int z=0; z<cube_size; z++) {
 
-				enlight = highdim==0 && highnr == x ||
-							highdim==1 && highnr == y ||
-							highdim==2 && highnr == z;
+				enlight = (highdim==0 && highnr == x) ||
+							(highdim==1 && highnr == y) ||
+							(highdim==2 && highnr == z);
 
 				glPushMatrix();
 
