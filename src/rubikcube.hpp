@@ -8,14 +8,14 @@ enum Color {
 	green,
 	blue,
 	yellow,
-	pink
+	orange
 };
 
 class RubikCube {
 	private:
 		int cube_size;
 
-		Color*** side_color;
+		Color*** face_color;
 
 	public:
 		RubikCube(int size=3);

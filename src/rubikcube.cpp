@@ -178,7 +178,7 @@ void RubikCube::glSetColor(Color color) {
 			mat_rgb[1] = 1;
 			mat_rgb[2] = 1;
 			break;
-		case pink:
+		case orange:
 			mat_rgb[0] = 1;
 			mat_rgb[1] = 0;
 			mat_rgb[2] = 1;
