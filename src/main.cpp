@@ -371,7 +371,9 @@ void drawRubiks() {
 void drawScene(){
 
 	//drawWalls();
-	drawRubiks();
+	//drawRubiks();
+
+
 	glColor4f(WHITE);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0);
