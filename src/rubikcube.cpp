@@ -78,6 +78,12 @@ void RubikCube::glDisplay() {
 						glRotatef(-rotationAngle, 0, 0, 1);
 				}
 
+
+				//glEnable(GL_BLEND);
+				//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+				//glColor4f(1, 1, 1, 0.5);
+
 				glDrawCube(x, y, z,
 					cube_color[0][x][y],
 					cube_color[1][x][y],
@@ -87,6 +93,8 @@ void RubikCube::glDisplay() {
 					cube_color[5][x][z]);
 
 				glPopMatrix();
+
+				//glDisable(GL_BLEND);
 			}
 		}
 	}

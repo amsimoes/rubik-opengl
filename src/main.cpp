@@ -60,7 +60,7 @@ int azulejo = 0;
 RgbImage imag;
 
 RubikCube rubik(3);
-
+float alpha = 0.0;
 
 void loadTextures()
 {
@@ -293,7 +293,17 @@ void drawScene(){
 		for (int j=1; j >= -1; j--) {
 			// 1-i , 1-j
 
+			glPushMatrix();
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glColor4f(1, 1, 1, alpha);
 			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+
+			glDisable(GL_BLEND);
+
+			glPopMatrix();
 		}	
 	}
 
@@ -318,7 +328,7 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1: gluPerspective(88.0, wScreen/hScreen, 0.1, zC); break;
+		case 1: gluPerspective(88.0, wScreen/hScreen, 0.1, 50); break;
 		default: glOrtho (-orthoX/2, orthoX/2, -orthoY/2, orthoY/2, -orthoZ/2, orthoZ/2);
 			break;
 	}
@@ -329,9 +339,9 @@ void display(void){
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
-	drawScene();
 
 	rubik.glDisplay();
+	drawScene();
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
 	glutSwapBuffers();
@@ -402,6 +412,18 @@ void keyboard(unsigned char key, int x, int y){
 		case '0':   // TOP: RIGHT ->
 			break;
 
+		case 't':
+		case 'T':
+			if (alpha < 1.0)
+				alpha += 0.1f;
+			printf("alpa = %f\n", alpha);
+			break;
+		case 'r':
+		case 'R':
+			if (alpha >= 0.1f)
+				alpha -= 0.1f;
+			break;
+
 		case ' ':
 			rubik.highlightNext();
 			printf("highlight = %d\n", rubik.highlight);
@@ -456,6 +478,7 @@ int main(int argc, char** argv){
 	glutKeyboardFunc(keyboard);
 	glutTimerFunc(msec, Timer, 1);
 
+	//glCullFace(GL_FRONT_AND_BACK);
 	glutMainLoop();
 
 	return 0;
