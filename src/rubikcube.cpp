@@ -254,8 +254,10 @@ void RubikCube::glDrawCube(int x, int y, int z, int back, int front, int left, i
 	int size = 1;
 
 	glPushMatrix();
-	glTranslatef(-size*2+x*(size*2), -size*2+y*(size*2), -size*2+z*(size*2));
 
+	glScalef(scale_factor, scale_factor, scale_factor);
+
+	glTranslatef(-size*2+x*(size*2), -size*2+y*(size*2), -size*2+z*(size*2));
 
 	// YELLOW
 	glEnable(GL_TEXTURE_2D);

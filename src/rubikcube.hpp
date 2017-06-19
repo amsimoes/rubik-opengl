@@ -19,11 +19,12 @@ class RubikCube {
 		float rotationAngle;
 
 	public:
-		int highlight;
-		int*** cube_color;
-		
 		RubikCube(int size=3);
 		~RubikCube();
+
+		int highlight;
+		int*** cube_color;
+		float scale_factor;
 
 		void highlightNext()	{ highlight++; highlight %= 3*cube_size; };
 

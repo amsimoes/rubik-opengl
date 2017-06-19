@@ -15,6 +15,7 @@
 
 //--------------------------------- Definir cores
 #define frand()			((float)rand()/RAND_MAX)
+#define WHITE    1.0, 1.0, 1.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define PI		 3.14159
 
@@ -700,6 +701,17 @@ void keyboard(unsigned char key, int x, int y){
 		case 'R':
 			if (alpha >= 0.1f)
 				alpha -= 0.1f;
+			break;
+
+		case '+':
+			printf("xC = %f\n", xC);
+			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			rubik.scale_factor += xC / 30;
+			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			break;
+		case '-':
+			if (rubik.scale_factor > xC / 30)
+				rubik.scale_factor -= xC / 30;
 			break;
 
 		case ' ':
