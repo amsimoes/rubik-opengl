@@ -11,16 +11,10 @@
 #include "RgbImage.h"
 #include "rubikcube.hpp"
 #include "main.hpp"
+#include "particles.hpp"
 
 //--------------------------------- Definir cores
-#define BLUE     0.0, 0.0, 1.0, 1.0
-#define RED 	 1.0, 0.0, 0.0, 1.0
-#define YELLOW   1.0, 1.0, 0.0, 1.0
-#define GREEN    0.0, 1.0, 0.0, 1.0
-#define ORANGE   1.0, cubeSize, 0.1, 1.0
-#define WHITE    1.0, 1.0, 1.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
-#define GRAY     0.9, 0.92, 0.29, 1.0
 #define PI		 3.14159
 
 //================================================================================
@@ -61,12 +55,41 @@ GLuint cube_textures[6];
 GLuint texture[10];
 GLuint floor_texture[0];
 GLuint skybox_textures[6];
+GLuint particle_textures[6];
+
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
 
 RubikCube rubik(3);
 float alpha = 0.0;
+
+void loadParticles() {
+	glGenTextures(1, &particle_textures[0]);
+	imag.LoadBmpFile("../assets/texturas_cubo/amarelo.bmp");
+	glBindTexture(GL_TEXTURE_2D, particle_textures[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+	            imag.GetNumCols(),
+	            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+	            imag.ImageData());
+	/*for (int i=0; i < 6; i++) {
+		glGenTextures(1, &particle_textures[i]);
+		imag.LoadBmpFile(particles_assets[i]);
+		glBindTexture(GL_TEXTURE_2D, particle_textures[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3,
+		            imag.GetNumCols(),
+		            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+		            imag.ImageData());
+	}*/
+}
 
 void loadTextures()
 {
@@ -216,38 +239,63 @@ void loadTextures()
 			imag.ImageData());
 
 
-	// WALL TEST
-	glGenTextures(1, &texture[0]);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	imag.LoadBmpFile("../assets/texturas_cubo/branco.bmp");
-	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());
+	loadParticles();
 }
 
+void showParticles(Particle *particle) {
+	for (int i=0; i < MAX_PARTICLES; i++) {
+		glColor4f(particle[i].r, particle[i].g, particle[i].b, particle[i].life);
 
-void init(void)
-{
-	glClearColor(BLACK);
-	glShadeModel(GL_SMOOTH);
-	loadTextures();
-	glEnable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
+		glBegin(GL_QUADS);
+			glTexCoord2d(0,0); glVertex3f(particle[i].x - particle[i].size, particle[i].y - particle[i].size, particle[i].z);
+			glTexCoord2d(1,0); glVertex3f(particle[i].x + particle[i].size, particle[i].y - particle[i].size, particle[i].z);
+			glTexCoord2d(1,1); glVertex3f(particle[i].x + particle[i].size, particle[i].y + particle[i].size, particle[i].z);
+			glTexCoord2d(0,1); glVertex3f(particle[i].x - particle[i].size, particle[i].y + particle[i].size, particle[i].z);
+		glEnd();
+
+		particle[i].x += particle[i].vx;
+		particle[i].y += particle[i].vy;
+		particle[i].z += particle[i].vz;
+		particle[i].vx += particle[i].ax;
+		particle[i].vy += particle[i].ay;
+		particle[i].vz += particle[i].az;
+		particle[i].life -= particle[i].fade;		
+	}
 }
 
+void initParticles(Particle *particle) {
+	GLfloat v, theta, phi;
+	GLfloat px, py, pz;
+	GLfloat ps;
 
-void resizeWindow(GLsizei w, GLsizei h)
-{
- 	wScreen=w;
-	hScreen=h;
-	glutPostRedisplay();
+	px = -0.0;
+	py = 200.0;
+	pz = -200.0;
+	ps = 0.5;
+
+	for (int i=0; i < MAX_PARTICLES; i++) {
+		v = 2 * frand() + 0.02;
+		theta = 2.0 * frand() * PI;
+		phi = frand() * PI;
+
+		particle[i].size = ps;
+		particle[i].x = 10.0;
+		particle[i].y = 0.0;
+		particle[i].z = 0.0;
+
+		particle[i].vx = v * cos(theta) * sin(phi);
+		particle[i].vy = v * cos(phi);
+		particle[i].vz = v * sin(theta) * sin(phi);
+		particle[i].ax = 0.05f;
+		particle[i].ay = -0.05f;
+		particle[i].az = 0.05f;
+
+		particle[i].r = 1.0f;
+		particle[i].g = 0.0f;
+		particle[i].b = 1.0f;
+		particle[i].life = 11.0f;
+		particle[i].fade = 0.01f;
+	}
 }
 
 void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k) {
@@ -525,11 +573,6 @@ void drawScene(){
 	}
 	glDisable(GL_BLEND);
 
-
-
-	//printf("cube_color[0][1][1] = %d\n", rubik.cube_color[1][1][1]);
-	//drawLines();
-
 }
 
 void display(void){
@@ -568,6 +611,8 @@ void display(void){
 
 void Timer(int value)
 {
+	initParticles(particle1);
+
 	//angBule=angBule+incBule;
 	glutPostRedisplay();
 	glutTimerFunc(msec,Timer, 1);
@@ -639,11 +684,19 @@ void keyboard(unsigned char key, int x, int y){
 		case '0':   // TOP: RIGHT ->
 			break;
 
+		case 'e':
+		case 'E':
+			printf("TECLA EEEE\n");
+			initParticles(particle1);
+			showParticles(particle1);
+			glutPostRedisplay();
+			break;
+
 		case 't':
 		case 'T':
 			if (alpha < 1.0)
 				alpha += 0.1f;
-			printf("alpa = %f\n", alpha);
+			printf("alpha = %f\n", alpha);
 			break;
 		case 'r':
 		case 'R':
@@ -685,6 +738,25 @@ void teclasNotAscii(int key, int x, int y){
     obsP[0] = raio*cos(angulo);
 	obsP[2] = raio*sin(angulo);
 
+	glutPostRedisplay();
+}
+
+void init(void)
+{
+	glClearColor(BLACK);
+	glShadeModel(GL_SMOOTH);
+	loadTextures();
+	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
+	initParticles(particle1);
+}
+
+
+void resizeWindow(GLsizei w, GLsizei h)
+{
+ 	wScreen=w;
+	hScreen=h;
 	glutPostRedisplay();
 }
 
