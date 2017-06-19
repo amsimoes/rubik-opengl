@@ -92,32 +92,56 @@ void loadParticles() {
 
 void loadSkybox() {
 	glGenTextures(1, &skybox_textures[0]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
-		imag.LoadBmpFile("../assets/skybox/skybox1.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_dn.bmp");
+		// imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
 	glGenTextures(1, &skybox_textures[1]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
-		imag.LoadBmpFile("../assets/skybox/skybox2.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_up.bmp");
+		// imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 				
 	glGenTextures(1, &skybox_textures[2]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
-		imag.LoadBmpFile("../assets/skybox/skybox3.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_lf.bmp");
+		// imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
 	glGenTextures(1, &skybox_textures[3]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
-		imag.LoadBmpFile("../assets/skybox/skybox4.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_rt.bmp");
+		// imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -125,8 +149,14 @@ void loadSkybox() {
 
 
 	glGenTextures(1, &skybox_textures[4]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
-		imag.LoadBmpFile("../assets/skybox/skybox5.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_bk.bmp");
+		// imag.LoadBmpFile("../assets/texturas_cubo/verde.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -134,8 +164,13 @@ void loadSkybox() {
 
 
 	glGenTextures(1, &skybox_textures[5]);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
-		imag.LoadBmpFile("../assets/skybox/skybox6.bmp");
+	glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		imag.LoadBmpFile("../assets/skybox/skybox_ft.bmp");
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
@@ -145,7 +180,7 @@ void loadSkybox() {
 
 void loadTextures()
 {
-	//loadSkybox();
+	loadSkybox();
 
 	// FLOOR
 	/*glGenTextures(1, &floor_texture[0]);
@@ -388,22 +423,6 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 	glPopMatrix();
 }
 
-void drawLines() {
-	glColor4f(WHITE);
-	glBegin(GL_LINES);
-		glVertex3f( 0, 0, 0);
-		glVertex3f(10, 0, 0);
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3f(0,  0, 0);
-		glVertex3f(0, 10, 0);
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3f( 0, 0, 0);
-		glVertex3f( 0, 0,10);
-	glEnd();
-}
-
 void drawFloor() {
 	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
@@ -434,48 +453,22 @@ void drawSkybox() {
 		glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  -skybox, -skybox );
-			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, -skybox, -skybox );
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox, -skybox, -skybox );
 			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, -skybox, skybox);
-			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox,  -skybox,  skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox,  -skybox,  skybox);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Teto y=xC
-	/*glPushMatrix();
+	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  skybox, -skybox );
-			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, skybox, -skybox );
-			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
-			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox,  skybox,  skybox);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	// Parede z=0
-	glPushMatrix();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex3f( -skybox, -skybox, -skybox);
-			glTexCoord2f(1.0f, 0.0f); glVertex3f( -skybox, skybox, -skybox);
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( -skybox, skybox, skybox);
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( -skybox,  -skybox, skybox);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	// Parede z=xC
-	glPushMatrix();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3f( skybox,  -skybox, -skybox);
-			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, skybox, -skybox);
-			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
-			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox,  -skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox,  skybox, -skybox );
+			glTexCoord2f(0.0f,0.0f); glVertex3f( skybox, skybox, -skybox );
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, skybox, skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( -skybox,  skybox,  skybox);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -483,12 +476,12 @@ void drawSkybox() {
 	// Parede x=0
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  -skybox, -skybox);
-			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox, skybox, -skybox);
-			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, -skybox);
-			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox,  -skybox, -skybox);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( -skybox, -skybox, -skybox);
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( -skybox, skybox, -skybox);
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( -skybox, skybox, skybox);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -skybox,  -skybox, skybox);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -496,15 +489,41 @@ void drawSkybox() {
 	// Parede x=xC
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox, -skybox, skybox);
-			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox, skybox, skybox);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( skybox,  -skybox, -skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox, skybox, -skybox);
 			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
-			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox, -skybox, skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox,  -skybox, skybox);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
-	glPopMatrix();*/
+	glPopMatrix();
+
+	// Parede z=0
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  -skybox, -skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox, skybox, -skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, -skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox,  -skybox, -skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// Parede z=xC
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox, -skybox, skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( -skybox, skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox, skybox, skybox);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( skybox, -skybox, skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 void drawReflection(){
 	glPushMatrix();
@@ -557,7 +576,7 @@ void drawScene(){
 	float trans_constant = xC*2;
 	float trans = xC*2;
 
-	//drawSkybox();
+	drawSkybox();
 				
 
 	glEnable(GL_BLEND);
