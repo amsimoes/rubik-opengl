@@ -14,6 +14,7 @@
 #include "particles.hpp"
 
 //--------------------------------- Definir cores
+#define frand()			((float)rand()/RAND_MAX)
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define PI		 3.14159
 
@@ -21,7 +22,7 @@
 //===========================================================Variaveis e constantes
 
 //------------------------------------------------------------ Sistema Coordenadas
-GLfloat		skybox = 50.0;
+GLfloat	  skybox = 50.0;
 GLfloat   xC=10.0f, yC=2.5, zC=30.0;
 GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
@@ -42,9 +43,6 @@ GLint floorSize = 30;
 GLint reflect = 0;
 
 //------------------------------------------------------------ Texturas
-GLint    repete=1;
-GLfloat    rr=1;
-GLint    maxR  =20;
 GLint    msec=10;					//.. definicao do timer (actualizacao)
 
 //================================================================================
@@ -771,14 +769,12 @@ int main(int argc, char** argv){
 
 	init();
 
-	//glEnable(GL_CULL_FACE);
 	glutSpecialFunc(teclasNotAscii);
 	glutDisplayFunc(display);
 	glutReshapeFunc(resizeWindow);
 	glutKeyboardFunc(keyboard);
 	glutTimerFunc(msec, Timer, 1);
 
-	//glCullFace(GL_FRONT);
 	glutMainLoop();
 
 	return 0;
