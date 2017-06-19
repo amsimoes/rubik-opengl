@@ -593,8 +593,8 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
-		case 2:	gluPerspective(100.0, wScreen/hScreen, 0.1, 100); break;
+		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 100); break;
+		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
 		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5);
 			break;
 	}
