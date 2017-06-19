@@ -90,8 +90,7 @@ void loadParticles() {
 	}*/
 }
 
-void loadTextures()
-{
+void loadSkybox() {
 	glGenTextures(1, &skybox_textures[0]);
 		glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
 		imag.LoadBmpFile("../assets/skybox/skybox1.bmp");
@@ -142,16 +141,20 @@ void loadTextures()
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());		
 
+}
+
+void loadTextures()
+{
+	//loadSkybox();
+
 	// FLOOR
-	glGenTextures(1, &floor_texture[0]);
+	/*glGenTextures(1, &floor_texture[0]);
 	glBindTexture(GL_TEXTURE_2D, floor_texture[0]);
 	imag.LoadBmpFile("../assets/floor_reflect.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-				 imag.ImageData());
-
-
+				 imag.ImageData());*/
 
 	// YELLOW
 	glGenTextures(1, &cube_textures[0]);
@@ -238,7 +241,7 @@ void loadTextures()
 			imag.ImageData());
 
 
-	loadParticles();
+	//loadParticles();
 }
 
 void showParticles(Particle *particle) {
@@ -554,7 +557,7 @@ void drawScene(){
 	float trans_constant = xC*2;
 	float trans = xC*2;
 
-	drawSkybox();
+	//drawSkybox();
 				
 
 	glEnable(GL_BLEND);
@@ -586,7 +589,7 @@ void display(void){
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Janela Visualizacao ]
 	glViewport (0,0,wScreen, hScreen);
 
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Projeccao]
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~Per~~~~~~~~~~~~~~~~~~~~~~~~[ Projeccao]
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
@@ -610,7 +613,7 @@ void display(void){
 
 void Timer(int value)
 {
-	initParticles(particle1);
+	//initParticles(particle1);
 
 	//angBule=angBule+incBule;
 	glutPostRedisplay();
@@ -620,21 +623,6 @@ void Timer(int value)
 //======================================================= EVENTOS
 void keyboard(unsigned char key, int x, int y){
 	switch (key) {
-		case 'q':
-		case 'Q':
-			if(defineProj <= 2)
-				defineProj += 1;
-			else
-				defineProj = 1;
-			glutPostRedisplay();
-			break;
-		case 'b':
-		case 'B':
-			if(reflect != 1)
-				reflect = 1;
-			else
-				reflect = 0;
-			break;
 		case '1':	// FRONT: LEFT <-
 			rubik.highlight = 0;
 			glutPostRedisplay();
@@ -683,11 +671,27 @@ void keyboard(unsigned char key, int x, int y){
 		case '0':   // TOP: RIGHT ->
 			break;
 
+		case 'q':
+		case 'Q':
+			if(defineProj <= 2)
+				defineProj += 1;
+			else
+				defineProj = 1;
+			glutPostRedisplay();
+			break;
+		case 'b':
+		case 'B':
+			if(reflect != 1)
+				reflect = 1;
+			else
+				reflect = 0;
+			break;
+
 		case 'e':
 		case 'E':
 			printf("TECLA EEEE\n");
-			initParticles(particle1);
-			showParticles(particle1);
+			//initParticles(particle1);
+			//showParticles(particle1);
 			glutPostRedisplay();
 			break;
 
@@ -759,7 +763,7 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
-	initParticles(particle1);
+	//initParticles(particle1);
 }
 
 
