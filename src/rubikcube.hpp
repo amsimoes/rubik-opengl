@@ -24,7 +24,7 @@ class RubikCube {
 
 		int highlight;
 		int*** cube_color;
-		float scale_factor;
+		float scale_factor = 1.0;
 
 		void highlightNext()	{ highlight++; highlight %= 3*cube_size; };
 
