@@ -251,7 +251,7 @@ void RubikCube::glRotate() {
 } 
 
 void RubikCube::glDrawCube(int x, int y, int z, int back, int front, int left, int right, int bottom, int top) {
-	int size = 1.5;
+	int size = 1;
 
 	glPushMatrix();
 	glTranslatef(-size*2+x*(size*2), -size*2+y*(size*2), -size*2+z*(size*2));

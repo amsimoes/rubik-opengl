@@ -27,7 +27,8 @@
 //===========================================================Variaveis e constantes
 
 //------------------------------------------------------------ Sistema Coordenadas
-GLfloat   xC=3.0f, yC=15.0, zC=30.0;
+GLfloat		skybox = 50.0;
+GLfloat   xC=10.0f, yC=2.5, zC=30.0;
 GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
 
@@ -42,6 +43,9 @@ GLfloat  inca   = 0.03;
 GLfloat  angBule = 0;
 GLfloat  incBule = 1;
 GLfloat  cubeSize = 2.5;
+GLint offset_reflect = 1;
+GLint floorSize = 30;
+GLint reflect = 0;
 
 //------------------------------------------------------------ Texturas
 GLint    repete=1;
@@ -54,7 +58,9 @@ GLint    msec=10;					//.. definicao do timer (actualizacao)
 //------------------------------------------------------------ Texturas
 
 GLuint cube_textures[6];
-GLuint  texture[10];
+GLuint texture[10];
+GLuint floor_texture[0];
+GLuint skybox_textures[6];
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
@@ -64,10 +70,71 @@ float alpha = 0.0;
 
 void loadTextures()
 {
+	glGenTextures(1, &skybox_textures[0]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
+		imag.LoadBmpFile("../assets/skybox/skybox1.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());	
+
+	glGenTextures(1, &skybox_textures[1]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
+		imag.LoadBmpFile("../assets/skybox/skybox2.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());	
+				
+	glGenTextures(1, &skybox_textures[2]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
+		imag.LoadBmpFile("../assets/skybox/skybox3.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());	
+
+	glGenTextures(1, &skybox_textures[3]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
+		imag.LoadBmpFile("../assets/skybox/skybox4.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());	
+
+
+	glGenTextures(1, &skybox_textures[4]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
+		imag.LoadBmpFile("../assets/skybox/skybox5.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());	
+
+
+	glGenTextures(1, &skybox_textures[5]);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
+		imag.LoadBmpFile("../assets/skybox/skybox6.bmp");
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());		
+
+	// FLOOR
+	glGenTextures(1, &floor_texture[0]);
+	glBindTexture(GL_TEXTURE_2D, floor_texture[0]);
+	imag.LoadBmpFile("../assets/floor_reflect.bmp");
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());
+
+
+
 	// YELLOW
 	glGenTextures(1, &cube_textures[0]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[0]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -81,7 +148,7 @@ void loadTextures()
 	// WHITE
 	glGenTextures(1, &cube_textures[1]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[1]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -95,7 +162,7 @@ void loadTextures()
 	// RED
 	glGenTextures(1, &cube_textures[2]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[2]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -109,7 +176,7 @@ void loadTextures()
 	// ORANGE
 	glGenTextures(1, &cube_textures[3]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[3]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -123,7 +190,7 @@ void loadTextures()
 	// BLUE
 	glGenTextures(1, &cube_textures[4]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[4]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -137,7 +204,7 @@ void loadTextures()
 	// GREEN
 	glGenTextures(1, &cube_textures[5]);
 	glBindTexture(GL_TEXTURE_2D, cube_textures[5]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -152,7 +219,7 @@ void loadTextures()
 	// WALL TEST
 	glGenTextures(1, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -171,6 +238,7 @@ void init(void)
 	glShadeModel(GL_SMOOTH);
 	loadTextures();
 	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -189,11 +257,12 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glTranslatef(trans_j, trans_constant*-1.0f, trans_k);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[4][j][k]]);
+		//glColor4f(1,1,1,0.25);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  -xC, -xC );
-			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, -xC, -xC );
-			glTexCoord2f(1.0f,1.0f); glVertex3i( xC, -xC, xC);
-			glTexCoord2f(0.0f,1.0f); glVertex3i( -xC,  -xC,  xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -xC,  -xC, -xC );
+			glTexCoord2f(1.0f,0.0f); glVertex3f( xC, -xC, -xC );
+			glTexCoord2f(1.0f,1.0f); glVertex3f( xC, -xC, xC);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -xC,  -xC,  xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -204,10 +273,10 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[5][j][k]]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  xC, -xC );
-			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, xC, -xC );
-			glTexCoord2f(1.0f,1.0f); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,1.0f); glVertex3i( -xC,  xC,  xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -xC,  xC, -xC );
+			glTexCoord2f(1.0f,0.0f); glVertex3f( xC, xC, -xC );
+			glTexCoord2f(1.0f,1.0f); glVertex3f( xC, xC, xC);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -xC,  xC,  xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -218,10 +287,10 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[2][k][j]]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex3i( -xC, -xC, -xC);
-			glTexCoord2f(1.0f, 0.0f); glVertex3i( -xC, xC, -xC);
-			glTexCoord2f(1.0f, 1.0f); glVertex3i( -xC, xC, xC);
-			glTexCoord2f(0.0f, 1.0f); glVertex3i( -xC,  -xC, xC);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -xC, -xC, -xC);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( -xC, xC, -xC);
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( -xC, xC, xC);
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( -xC,  -xC, xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -232,10 +301,10 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[3][k][j]]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( xC,  -xC, -xC);
-			glTexCoord2f(1.0f,0.0f); glVertex3i( xC, xC, -xC);
-			glTexCoord2f(1.0f,1.0f); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,1.0f); glVertex3i( xC,  -xC, xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( xC,  -xC, -xC);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( xC, xC, -xC);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( xC, xC, xC);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( xC,  -xC, xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -246,10 +315,10 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[0][k][j]]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC,  -xC, -xC);
-			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC, xC, -xC);
-			glTexCoord2f(1.0f,1.0f); glVertex3i( xC, xC, -xC);
-			glTexCoord2f(0.0f,1.0f); glVertex3i( xC,  -xC, -xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -xC,  -xC, -xC);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -xC, xC, -xC);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( xC, xC, -xC);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( xC,  -xC, -xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -260,10 +329,10 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, cube_textures[rubik.cube_color[1][k][j]]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f); glVertex3i( -xC, -xC, xC);
-			glTexCoord2f(1.0f,0.0f); glVertex3i( -xC, xC, xC);
-			glTexCoord2f(1.0f,1.0f); glVertex3i( xC, xC, xC);
-			glTexCoord2f(0.0f,1.0f); glVertex3i( xC, -xC, xC);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -xC, -xC, xC);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -xC, xC, xC);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( xC, xC, xC);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( xC, -xC, xC);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -272,40 +341,191 @@ void drawWalls(float trans_constant, float trans_j, float trans_k, int j, int k)
 void drawLines() {
 	glColor4f(WHITE);
 	glBegin(GL_LINES);
-		glVertex3i( 0, 0, 0);
-		glVertex3i(10, 0, 0);
+		glVertex3f( 0, 0, 0);
+		glVertex3f(10, 0, 0);
 	glEnd();
 	glBegin(GL_LINES);
-		glVertex3i(0,  0, 0);
-		glVertex3i(0, 10, 0);
+		glVertex3f(0,  0, 0);
+		glVertex3f(0, 10, 0);
 	glEnd();
 	glBegin(GL_LINES);
-		glVertex3i( 0, 0, 0);
-		glVertex3i( 0, 0,10);
+		glVertex3f( 0, 0, 0);
+		glVertex3f( 0, 0,10);
 	glEnd();
 }
 
+void drawFloor() {
+	glEnable(GL_TEXTURE_2D);
+	glPushMatrix();
+	glTranslatef(0.0,offset_reflect,0.0);
+	glBindTexture(GL_TEXTURE_2D, floor_texture[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glBegin(GL_QUADS);
+	
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(-floorSize / 2, 0, floorSize / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(floorSize / 2, 0, floorSize / 2);
+    glTexCoord2f(1, 1);
+	glVertex3f(floorSize / 2, 0, -floorSize / 2);	
+	glTexCoord2f(0, 1);
+	glVertex3f(-floorSize / 2, 0, -floorSize / 2);
+			
+	glEnd();
+	glPopMatrix();
+}
+
+void drawSkybox() {
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  -skybox, -skybox );
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, -skybox, -skybox );
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, -skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox,  -skybox,  skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Teto y=xC
+	/*glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  skybox, -skybox );
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, skybox, -skybox );
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( -skybox,  skybox,  skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// Parede z=0
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -skybox, -skybox, -skybox);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( -skybox, skybox, -skybox);
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( -skybox, skybox, skybox);
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( -skybox,  -skybox, skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// Parede z=xC
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( skybox,  -skybox, -skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( skybox, skybox, -skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox,  -skybox, skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// Parede x=0
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox,  -skybox, -skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox, skybox, -skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, -skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox,  -skybox, -skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// Parede x=xC
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f); glVertex3f( -skybox, -skybox, skybox);
+			glTexCoord2f(1.0f,0.0f); glVertex3f( -skybox, skybox, skybox);
+			glTexCoord2f(1.0f,1.0f); glVertex3f( skybox, skybox, skybox);
+			glTexCoord2f(0.0f,1.0f); glVertex3f( skybox, -skybox, skybox);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();*/
+}
+void drawReflection(){
+	glPushMatrix();
+	glTranslatef(0,-cubeSize*2,0);
+
+	glEnable(GL_STENCIL_TEST); //Activa o uso do stencil buffer 
+    glColorMask(0, 0, 0, 0); //Nao escreve no color buffer 
+    glDisable(GL_DEPTH_TEST); //Torna inactivo o teste de profundidade 
+    glStencilFunc(GL_ALWAYS, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    //Coloca a 1 todos os pixels no stencil buffer que representam a superfície reflectora
+    //DESENHAR SUPERFÍCIE REFLECTORA
+    glColorMask(1, 1, 1, 1); //Activa a escrita de cor
+    drawFloor();
+    glEnable(GL_DEPTH_TEST); //Activa o teste de profundidade
+    glStencilFunc(GL_EQUAL, 1, 1);//O stencil test passa apenas quando o pixel tem o valor 1 no stencil buffer
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Stencil buffer read-only
+    //Desenha o objecto com a reflexão onde stencil buffer é 1
+    glPushMatrix();
+    glTranslatef(0, -cubeSize*1.5, 0);
+    glScalef(1, -1, 1);
+    // Faz o cubo ir para a parte de baixo da superfície refletora
+    //glTranslatef(0, cubeSize*1.5, 0);
+    // Desenhar cubo ( reflexão )
+    rubik.glDisplay();
+    glPopMatrix();
+    //DESENHAR OBJECTO REFLECTIDO
+    glDisable(GL_STENCIL_TEST); //Desactiva a utilização do stencil buffer 
+
+    //Blending
+	glEnable(GL_BLEND);
+	glColor4f(1, 1, 1, 0.25);
+	drawFloor();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+}
+
 void drawScene(){
+
+
+
+	if(reflect == 1)
+		drawReflection();
+
+	glPushMatrix();
+	rubik.glDisplay();
+	glPopMatrix();
+
+	
 	float trans_constant = xC*2;
 	float trans = xC*2;
 
+	drawSkybox();
+				
+
+	glEnable(GL_BLEND);
 	for (int i=1; i >= -1; i--) {
 		for (int j=1; j >= -1; j--) {
 			// 1-i , 1-j
 
 			glPushMatrix();
 
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 			glColor4f(1, 1, 1, alpha);
 			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
-
-			glDisable(GL_BLEND);
 
 			glPopMatrix();
 		}	
 	}
+	glDisable(GL_BLEND);
+
+
 
 	//printf("cube_color[0][1][1] = %d\n", rubik.cube_color[1][1][1]);
 	//drawLines();
@@ -313,13 +533,13 @@ void drawScene(){
 }
 
 void display(void){
-	int orthoX, orthoY, orthoZ;
-	orthoX = 15;
-	orthoY = 15;
+	float orthoX, orthoY, orthoZ;
+	orthoX = 3;
+	orthoY = 2.5;
 	orthoZ = 30;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Janela Visualizacao ]
 	glViewport (0,0,wScreen, hScreen);
@@ -328,8 +548,9 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1: gluPerspective(88.0, wScreen/hScreen, 0.1, 50); break;
-		default: glOrtho (-orthoX/2, orthoX/2, -orthoY/2, orthoY/2, -orthoZ/2, orthoZ/2);
+		case 1: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
+		case 2:	gluPerspective(100.0, wScreen/hScreen, 0.1, 100); break;
+		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5);
 			break;
 	}
 
@@ -340,10 +561,7 @@ void display(void){
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
 
-	rubik.glDisplay();
 	drawScene();
-
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Actualizacao
 	glutSwapBuffers();
 }
 
@@ -360,10 +578,19 @@ void keyboard(unsigned char key, int x, int y){
 	switch (key) {
 		case 'q':
 		case 'Q':
-			defineProj = (defineProj + 1) % 2;
+			if(defineProj <= 2)
+				defineProj += 1;
+			else
+				defineProj = 1;
 			glutPostRedisplay();
 			break;
-
+		case 'b':
+		case 'B':
+			if(reflect != 1)
+				reflect = 1;
+			else
+				reflect = 0;
+			break;
 		case '1':	// FRONT: LEFT <-
 			rubik.highlight = 0;
 			glutPostRedisplay();
@@ -450,8 +677,8 @@ void teclasNotAscii(int key, int x, int y){
 	if(key == GLUT_KEY_RIGHT)
 		angulo=angulo-inca;
 
-	if (obsP[1]> yC)
-		obsP[1]= yC;
+	if (obsP[1]> yC*2)
+		obsP[1]= yC*2;
     if (obsP[1]<-yC)
 		obsP[1]=-yC;
 
@@ -465,20 +692,21 @@ void teclasNotAscii(int key, int x, int y){
 int main(int argc, char** argv){
 
 	glutInit(&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL );
 	glutInitWindowSize (wScreen, hScreen);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("CUBO RUBIK");
 
 	init();
 
+	//glEnable(GL_CULL_FACE);
 	glutSpecialFunc(teclasNotAscii);
 	glutDisplayFunc(display);
 	glutReshapeFunc(resizeWindow);
 	glutKeyboardFunc(keyboard);
 	glutTimerFunc(msec, Timer, 1);
 
-	//glCullFace(GL_FRONT_AND_BACK);
+	//glCullFace(GL_FRONT);
 	glutMainLoop();
 
 	return 0;
