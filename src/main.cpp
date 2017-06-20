@@ -23,7 +23,7 @@
 //===========================================================Variaveis e constantes
 
 //------------------------------------------------------------ Sistema Coordenadas
-GLfloat	  skybox = 50.0;
+GLfloat	  skybox = 500.0;
 GLfloat   xC=10.0f, yC=2.5, zC=30.0;
 GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
@@ -63,19 +63,13 @@ RgbImage imag;
 RubikCube rubik(3);
 float alpha = 0.0;
 
+char particles_assets[6][64] = {"../assets/texturas_cubo/amarelo.bmp",
+			"../assets/texturas_cubo/verde.bmp", "../assets/texturas_cubo/vermelho.bmp",
+			"../assets/texturas_cubo/laranja.bmp", "../assets/texturas_cubo/branco.bmp",
+			"../assets/texturas_cubo/azul.bmp"};
+
 void loadParticles() {
-	glGenTextures(1, &particle_textures[0]);
-	imag.LoadBmpFile("../assets/texturas_cubo/amarelo.bmp");
-	glBindTexture(GL_TEXTURE_2D, particle_textures[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	            imag.GetNumCols(),
-	            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-	            imag.ImageData());
-	/*for (int i=0; i < 6; i++) {
+	for (int i=0; i < 6; i++) {
 		glGenTextures(1, &particle_textures[i]);
 		imag.LoadBmpFile(particles_assets[i]);
 		glBindTexture(GL_TEXTURE_2D, particle_textures[i]);
@@ -87,7 +81,7 @@ void loadParticles() {
 		            imag.GetNumCols(),
 		            imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 		            imag.ImageData());
-	}*/
+	}
 }
 
 void loadSkybox() {
@@ -175,11 +169,9 @@ void loadSkybox() {
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());		
-
 }
 
-void loadTextures()
-{
+void loadTextures() {
 	loadSkybox();
 
 	// FLOOR
@@ -276,12 +268,14 @@ void loadTextures()
 			imag.ImageData());
 
 
-	//loadParticles();
+	loadParticles();
 }
 
 void showParticles(Particle *particle) {
 	for (int i=0; i < MAX_PARTICLES; i++) {
-		glColor4f(particle[i].r, particle[i].g, particle[i].b, particle[i].life);
+
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, particle_textures[rand() % 6]);
 
 		glBegin(GL_QUADS);
 			glTexCoord2d(0,0); glVertex3f(particle[i].x - particle[i].size, particle[i].y - particle[i].size, particle[i].z);
@@ -289,6 +283,8 @@ void showParticles(Particle *particle) {
 			glTexCoord2d(1,1); glVertex3f(particle[i].x + particle[i].size, particle[i].y + particle[i].size, particle[i].z);
 			glTexCoord2d(0,1); glVertex3f(particle[i].x - particle[i].size, particle[i].y + particle[i].size, particle[i].z);
 		glEnd();
+
+		glDisable(GL_TEXTURE_2D);
 
 		particle[i].x += particle[i].vx;
 		particle[i].y += particle[i].vy;
@@ -303,35 +299,36 @@ void showParticles(Particle *particle) {
 void initParticles(Particle *particle) {
 	GLfloat v, theta, phi;
 	GLfloat px, py, pz;
-	GLfloat ps;
+	GLfloat particle_size;
 
 	px = -0.0;
 	py = 200.0;
 	pz = -200.0;
-	ps = 0.5;
+	particle_size = 0.02;
 
 	for (int i=0; i < MAX_PARTICLES; i++) {
-		v = 2 * frand() + 0.02;
-		theta = 2.0 * frand() * PI;
+		v = 1 * frand() + 0.02;
+		theta = 1.0 * frand() * PI;
 		phi = frand() * PI;
 
-		particle[i].size = ps;
-		particle[i].x = 10.0;
-		particle[i].y = 0.0;
-		particle[i].z = 0.0;
+		particle[i].size = particle_size;
+		particle[i].x = 5.0;
+		particle[i].y = 5.0;
+		particle[i].z = 5.0;
 
 		particle[i].vx = v * cos(theta) * sin(phi);
 		particle[i].vy = v * cos(phi);
-		particle[i].vz = v * sin(theta) * sin(phi);
-		particle[i].ax = 0.05f;
-		particle[i].ay = -0.05f;
-		particle[i].az = 0.05f;
+		particle[i].vz = v * sin(theta) * sin(phi);	
+
+		particle[i].ax = 0.01f;
+		particle[i].ay = 0.02f;
+		particle[i].az = 0.03f;
 
 		particle[i].r = 1.0f;
-		particle[i].g = 0.0f;
+		particle[i].g = 1.0f;
 		particle[i].b = 1.0f;
-		particle[i].life = 11.0f;
-		particle[i].fade = 0.01f;
+		particle[i].life = 1.0f;
+		particle[i].fade = 0.06f;
 	}
 }
 
@@ -525,7 +522,8 @@ void drawSkybox() {
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
-void drawReflection(){
+
+void drawReflection() {
 	glPushMatrix();
 	glTranslatef(0,-cubeSize*2,0);
 
@@ -561,9 +559,7 @@ void drawReflection(){
 	glPopMatrix();
 }
 
-void drawScene(){
-
-
+void drawScene() {
 
 	if(reflect == 1)
 		drawReflection();
@@ -572,13 +568,11 @@ void drawScene(){
 	rubik.glDisplay();
 	glPopMatrix();
 
-	
+	drawSkybox();
+
 	float trans_constant = xC*2;
 	float trans = xC*2;
-
-	drawSkybox();
 				
-
 	glEnable(GL_BLEND);
 	for (int i=1; i >= -1; i--) {
 		for (int j=1; j >= -1; j--) {
@@ -593,14 +587,13 @@ void drawScene(){
 		}	
 	}
 	glDisable(GL_BLEND);
-
 }
 
 void display(void){
 	float orthoX, orthoY, orthoZ;
-	orthoX = 3;
-	orthoY = 2.5;
-	orthoZ = 30;
+	orthoX = 8.0;
+	orthoY = 8.0;
+	orthoZ = 11.0;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -612,10 +605,9 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 100); break;
+		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 1000); break;
 		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
-		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5);
-			break;
+		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5); break;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Modelo+View(camera/observador) ]
@@ -626,6 +618,14 @@ void display(void){
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
 
 	drawScene();
+
+	showParticles(particle1);
+	//printf("particle1[0].life = %f\n", particle1[0].life);
+	if (particle1[0].life <= 0) {
+		initParticles(particle1);
+		printf("piu\n");
+	}
+
 	glutSwapBuffers();
 }
 
@@ -709,11 +709,11 @@ void keyboard(unsigned char key, int x, int y){
 		case 'e':
 		case 'E':
 			printf("TECLA EEEE\n");
-			//initParticles(particle1);
-			//showParticles(particle1);
-			glutPostRedisplay();
+			showParticles(particle1);
+			if (particle1[0].life <= 0) {
+				initParticles(particle1);
+			}
 			break;
-
 		case 't':
 		case 'T':
 			if (alpha < 1.0)
@@ -782,9 +782,8 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
-	//initParticles(particle1);
+	initParticles(particle1);
 }
-
 
 void resizeWindow(GLsizei w, GLsizei h)
 {
