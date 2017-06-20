@@ -539,30 +539,13 @@ void drawSkybox() {
 }
 
 void drawScene() {
-	// if(reflect == 1)
-	// 	drawReflection();
-
-	glPushMatrix();
-	if (scale) {
-		for(int i = 0; i<3; i++){
-			display();
-			glutPostRedisplay();
-			glPushMatrix();
-			rubik.scale_factor += xC / 30;
-			glPopMatrix();
-		}
-		scale = 0;
-	}
 
 	rubik.glDisplay();
-	glPopMatrix();
-
 	
 	float trans_constant = xC*2;
 	float trans = xC*2;
 
-	drawSkybox();
-				
+	drawSkybox();			
 
 	glEnable(GL_BLEND);
 	for (int i=1; i >= -1; i--) {
@@ -617,49 +600,6 @@ void drawReflection(){
 	glDisable(GL_BLEND);
 	glPopMatrix();
 }
-
-// void drawScene(){
-// 	// if(reflect == 1)
-// 	// 	drawReflection();
-
-// 	glPushMatrix();
-// 	/*if(scale){
-// 		for(int i = 0; i<10; i++){
-// 			glPushMatrix();
-// 			rubik.glDisplay();
-// 			rubik.scale_factor += xC / 30;
-// 			glPopMatrix();
-// 		}
-// 		scale = 0;
-// 	}
-// 	if(rotateCube){
-// 		glRotatef(90,1,0,1);
-// 	}*/
-// 	rubik.glDisplay();
-// 	glPopMatrix();
-
-	
-// 	float trans_constant = xC*2;
-// 	float trans = xC*2;
-
-// 	drawSkybox();
-				
-
-// 	glEnable(GL_BLEND);
-// 	for (int i=1; i >= -1; i--) {
-// 		for (int j=1; j >= -1; j--) {
-// 			// 1-i , 1-j
-
-// 			glPushMatrix();
-
-// 			glColor4f(1, 1, 1, alpha);
-// 			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
-
-//			glPopMatrix();
-//		}	
-//	}
-//	glDisable(GL_BLEND);
-// }
 
 void display(void){
 	float orthoX, orthoY, orthoZ;
@@ -817,10 +757,11 @@ void keyboard(unsigned char key, int x, int y){
 			break;
 
 		case '-':
-			if (rubik.scale_factor > xC / 30)
+			if (rubik.scale_factor >= 1.0 + xC / 30)
 				rubik.scale_factor -= xC / 30;
-			if (rubik.scale_factor <= 1.0)
+			else
 				rotateCube = 0;
+			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
 			explode_particles = 0;
 			break;
 
@@ -886,7 +827,7 @@ int main(int argc, char** argv){
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL );
 	glutInitWindowSize (wScreen, hScreen);
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow ("CUBO RUBIK");
+	glutCreateWindow ("RUBIK CUBE - Antonio Simoes & Joao Lopes");
 
 	init();
 
