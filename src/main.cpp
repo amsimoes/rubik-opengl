@@ -42,12 +42,13 @@ GLfloat  cubeSize = 2.5;
 GLint offset_reflect = 1;
 GLint floorSize = 30;
 GLint reflect = 0;
-
+GLint rotateCube = 0, scale = 0;
 //------------------------------------------------------------ Texturas
 GLint    msec=10;					//.. definicao do timer (actualizacao)
 
 //================================================================================
 //=========================================================================== INIT
+
 //------------------------------------------------------------ Texturas
 
 GLuint cube_textures[6];
@@ -59,6 +60,9 @@ GLuint particle_textures[6];
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
+
+GLfloat sun_start[] = {skybox,(500-127), (500-142)}
+GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)}
 
 RubikCube rubik(3);
 float alpha = 0.0;
@@ -85,6 +89,8 @@ void loadParticles() {
 }
 
 void loadSkybox() {
+
+	// DOWN
 	glGenTextures(1, &skybox_textures[0]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -99,6 +105,8 @@ void loadSkybox() {
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
+
+	// UP
 	glGenTextures(1, &skybox_textures[1]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -112,7 +120,9 @@ void loadSkybox() {
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
-				
+	
+
+	// LEFT			
 	glGenTextures(1, &skybox_textures[2]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -127,6 +137,8 @@ void loadSkybox() {
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
+
+	// RIGHT
 	glGenTextures(1, &skybox_textures[3]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -142,6 +154,7 @@ void loadSkybox() {
 				 imag.ImageData());	
 
 
+	// BACK
 	glGenTextures(1, &skybox_textures[4]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -157,6 +170,7 @@ void loadSkybox() {
 				 imag.ImageData());	
 
 
+	// FRONT
 	glGenTextures(1, &skybox_textures[5]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -175,13 +189,13 @@ void loadTextures() {
 	loadSkybox();
 
 	// FLOOR
-	/*glGenTextures(1, &floor_texture[0]);
+	glGenTextures(1, &floor_texture[0]);
 	glBindTexture(GL_TEXTURE_2D, floor_texture[0]);
 	imag.LoadBmpFile("../assets/floor_reflect.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-				 imag.ImageData());*/
+				 imag.ImageData());
 
 	// YELLOW
 	glGenTextures(1, &cube_textures[0]);
@@ -523,7 +537,52 @@ void drawSkybox() {
 	glPopMatrix();
 }
 
-void drawReflection() {
+void drawScene(){
+	// if(reflect == 1)
+	// 	drawReflection();
+
+	glPushMatrix();
+	if(scale){
+		for(int i = 0; i<10; i++){
+			glPushMatrix();
+			rubik.glDisplay();
+			rubik.scale_factor += xC / 30;
+			glPopMatrix();
+		}
+		scale = 0;
+	}
+	if(rotateCube){
+		glRotatef(90,1,0,1);
+		rotateCube = 0;
+	}
+	rubik.glDisplay();
+	glPopMatrix();
+
+	
+	float trans_constant = xC*2;
+	float trans = xC*2;
+
+	drawSkybox();
+				
+
+	glEnable(GL_BLEND);
+	for (int i=1; i >= -1; i--) {
+		for (int j=1; j >= -1; j--) {
+			// 1-i , 1-j
+
+			glPushMatrix();
+
+			glColor4f(1, 1, 1, alpha);
+			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+
+			glPopMatrix();
+		}	
+	}
+	glDisable(GL_BLEND);
+
+}
+
+void drawReflection(){
 	glPushMatrix();
 	glTranslatef(0,-cubeSize*2,0);
 
@@ -546,7 +605,8 @@ void drawReflection() {
     // Faz o cubo ir para a parte de baixo da superfície refletora
     //glTranslatef(0, cubeSize*1.5, 0);
     // Desenhar cubo ( reflexão )
-    rubik.glDisplay();
+    drawScene();
+    //rubik.glDisplay();
     glPopMatrix();
     //DESENHAR OBJECTO REFLECTIDO
     glDisable(GL_STENCIL_TEST); //Desactiva a utilização do stencil buffer 
@@ -559,35 +619,48 @@ void drawReflection() {
 	glPopMatrix();
 }
 
-void drawScene() {
+// void drawScene(){
+// 	// if(reflect == 1)
+// 	// 	drawReflection();
 
-	if(reflect == 1)
-		drawReflection();
+// 	glPushMatrix();
+// 	/*if(scale){
+// 		for(int i = 0; i<10; i++){
+// 			glPushMatrix();
+// 			rubik.glDisplay();
+// 			rubik.scale_factor += xC / 30;
+// 			glPopMatrix();
+// 		}
+// 		scale = 0;
+// 	}
+// 	if(rotateCube){
+// 		glRotatef(90,1,0,1);
+// 	}*/
+// 	rubik.glDisplay();
+// 	glPopMatrix();
 
-	glPushMatrix();
-	rubik.glDisplay();
-	glPopMatrix();
+	
+// 	float trans_constant = xC*2;
+// 	float trans = xC*2;
 
-	drawSkybox();
-
-	float trans_constant = xC*2;
-	float trans = xC*2;
+// 	drawSkybox();
 				
-	glEnable(GL_BLEND);
-	for (int i=1; i >= -1; i--) {
-		for (int j=1; j >= -1; j--) {
-			// 1-i , 1-j
 
-			glPushMatrix();
+// 	glEnable(GL_BLEND);
+// 	for (int i=1; i >= -1; i--) {
+// 		for (int j=1; j >= -1; j--) {
+// 			// 1-i , 1-j
 
-			glColor4f(1, 1, 1, alpha);
-			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+// 			glPushMatrix();
 
-			glPopMatrix();
-		}	
-	}
-	glDisable(GL_BLEND);
-}
+// 			glColor4f(1, 1, 1, alpha);
+// 			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+
+//			glPopMatrix();
+//		}	
+//	}
+//	glDisable(GL_BLEND);
+// }
 
 void display(void){
 	float orthoX, orthoY, orthoZ;
@@ -616,6 +689,8 @@ void display(void){
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
+	if(reflect == 1)
+		drawReflection();
 
 	drawScene();
 
@@ -728,9 +803,11 @@ void keyboard(unsigned char key, int x, int y){
 
 		case '+':
 			printf("xC = %f\n", xC);
-			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			rubik.scale_factor += xC / 30;
-			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			rotateCube = 1;
+			scale = 1;
+			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			// rubik.scale_factor += xC / 30;
+			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
 			break;
 		case '-':
 			if (rubik.scale_factor > xC / 30)
