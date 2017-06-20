@@ -61,11 +61,12 @@ GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
 
-GLfloat sun_start[] = {skybox,(500-127), (500-142)}
-GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)}
+GLfloat sun_start[] = {skybox,(500-127), (500-142)};
+GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)};
 
 RubikCube rubik(3);
 float alpha = 0.0;
+int explode_particles = 0;
 
 char particles_assets[6][64] = {"../assets/texturas_cubo/amarelo.bmp",
 			"../assets/texturas_cubo/verde.bmp", "../assets/texturas_cubo/vermelho.bmp",
@@ -318,7 +319,7 @@ void initParticles(Particle *particle) {
 	px = -0.0;
 	py = 200.0;
 	pz = -200.0;
-	particle_size = 0.02;
+	particle_size = 0.05;
 
 	for (int i=0; i < MAX_PARTICLES; i++) {
 		v = 1 * frand() + 0.02;
@@ -326,17 +327,17 @@ void initParticles(Particle *particle) {
 		phi = frand() * PI;
 
 		particle[i].size = particle_size;
-		particle[i].x = 5.0;
-		particle[i].y = 5.0;
-		particle[i].z = 5.0;
+		particle[i].x = 0.0;
+		particle[i].y = xC;
+		particle[i].z = 0.0;
 
 		particle[i].vx = v * cos(theta) * sin(phi);
 		particle[i].vy = v * cos(phi);
 		particle[i].vz = v * sin(theta) * sin(phi);	
 
 		particle[i].ax = 0.01f;
-		particle[i].ay = 0.02f;
-		particle[i].az = 0.03f;
+		particle[i].ay = 0.01f;
+		particle[i].az = 0.01f;
 
 		particle[i].r = 1.0f;
 		particle[i].g = 1.0f;
@@ -537,24 +538,22 @@ void drawSkybox() {
 	glPopMatrix();
 }
 
-void drawScene(){
+void drawScene() {
 	// if(reflect == 1)
 	// 	drawReflection();
 
 	glPushMatrix();
-	if(scale){
-		for(int i = 0; i<10; i++){
+	if (scale) {
+		for(int i = 0; i<3; i++){
+			display();
+			glutPostRedisplay();
 			glPushMatrix();
-			rubik.glDisplay();
 			rubik.scale_factor += xC / 30;
 			glPopMatrix();
 		}
 		scale = 0;
 	}
-	if(rotateCube){
-		glRotatef(90,1,0,1);
-		rotateCube = 0;
-	}
+
 	rubik.glDisplay();
 	glPopMatrix();
 
@@ -694,12 +693,18 @@ void display(void){
 
 	drawScene();
 
-	showParticles(particle1);
-	//printf("particle1[0].life = %f\n", particle1[0].life);
-	if (particle1[0].life <= 0) {
-		initParticles(particle1);
-		printf("piu\n");
+	if (explode_particles) {
+		showParticles(particle1);
+		if (particle1[0].life <= 0) {
+			initParticles(particle1);
+		}
+		// explode_particles = 0;
 	}
+	//showParticles(particle1);
+	//printf("particle1[0].life = %f\n", particle1[0].life);
+	//if (particle1[0].life <= 0) {
+	//	initParticles(particle1);
+	//}
 
 	glutSwapBuffers();
 }
@@ -802,16 +807,21 @@ void keyboard(unsigned char key, int x, int y){
 			break;
 
 		case '+':
-			printf("xC = %f\n", xC);
 			rotateCube = 1;
 			scale = 1;
-			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			// rubik.scale_factor += xC / 30;
-			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			rubik.scale_factor += xC / 30;
+			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			if (rubik.scale_factor >= 3) {
+				explode_particles = 1;
+			}
 			break;
+
 		case '-':
 			if (rubik.scale_factor > xC / 30)
 				rubik.scale_factor -= xC / 30;
+			if (rubik.scale_factor <= 1.0)
+				rotateCube = 0;
+			explode_particles = 0;
 			break;
 
 		case ' ':

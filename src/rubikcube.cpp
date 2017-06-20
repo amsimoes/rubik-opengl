@@ -84,6 +84,10 @@ void RubikCube::glDisplay() {
 
 				//glColor4f(1, 1, 1, 0.5);
 
+				if (rotateCube) {
+					glRotatef(60,1,0,1);
+				}
+
 				glDrawCube(x, y, z,
 					cube_color[0][x][y],
 					cube_color[1][x][y],

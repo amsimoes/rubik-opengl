@@ -2,6 +2,7 @@
 #define RUBIK_H
 
 extern GLuint cube_textures[6];
+extern GLint rotateCube;
 
 enum Color {
 	black = 0,
