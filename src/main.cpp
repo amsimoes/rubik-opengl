@@ -23,7 +23,7 @@
 //===========================================================Variaveis e constantes
 
 //------------------------------------------------------------ Sistema Coordenadas
-GLfloat	  skybox = 50.0;
+GLfloat	  skybox = 500.0;
 GLfloat   xC=10.0f, yC=2.5, zC=30.0;
 GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
@@ -42,12 +42,13 @@ GLfloat  cubeSize = 2.5;
 GLint offset_reflect = 1;
 GLint floorSize = 30;
 GLint reflect = 0;
-
+GLint rotateCube = 0, scale = 0;
 //------------------------------------------------------------ Texturas
 GLint    msec=10;					//.. definicao do timer (actualizacao)
 
 //================================================================================
 //=========================================================================== INIT
+
 //------------------------------------------------------------ Texturas
 
 GLuint cube_textures[6];
@@ -59,6 +60,9 @@ GLuint particle_textures[6];
 GLuint  tex;
 int azulejo = 0;
 RgbImage imag;
+
+GLfloat sun_start[] = {skybox,(500-127), (500-142)}
+GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)}
 
 RubikCube rubik(3);
 float alpha = 0.0;
@@ -91,6 +95,8 @@ void loadParticles() {
 }
 
 void loadSkybox() {
+
+	// DOWN
 	glGenTextures(1, &skybox_textures[0]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[0]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -105,6 +111,8 @@ void loadSkybox() {
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
+
+	// UP
 	glGenTextures(1, &skybox_textures[1]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[1]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -118,7 +126,9 @@ void loadSkybox() {
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
-				
+	
+
+	// LEFT			
 	glGenTextures(1, &skybox_textures[2]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[2]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -133,6 +143,8 @@ void loadSkybox() {
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());	
 
+
+	// RIGHT
 	glGenTextures(1, &skybox_textures[3]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[3]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -148,6 +160,7 @@ void loadSkybox() {
 				 imag.ImageData());	
 
 
+	// BACK
 	glGenTextures(1, &skybox_textures[4]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[4]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -163,6 +176,7 @@ void loadSkybox() {
 				 imag.ImageData());	
 
 
+	// FRONT
 	glGenTextures(1, &skybox_textures[5]);
 	glBindTexture(GL_TEXTURE_2D, skybox_textures[5]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -183,13 +197,13 @@ void loadTextures()
 	loadSkybox();
 
 	// FLOOR
-	/*glGenTextures(1, &floor_texture[0]);
+	glGenTextures(1, &floor_texture[0]);
 	glBindTexture(GL_TEXTURE_2D, floor_texture[0]);
 	imag.LoadBmpFile("../assets/floor_reflect.bmp");
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-				 imag.ImageData());*/
+				 imag.ImageData());
 
 	// YELLOW
 	glGenTextures(1, &cube_textures[0]);
@@ -525,50 +539,25 @@ void drawSkybox() {
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
-void drawReflection(){
-	glPushMatrix();
-	glTranslatef(0,-cubeSize*2,0);
-
-	glEnable(GL_STENCIL_TEST); //Activa o uso do stencil buffer 
-    glColorMask(0, 0, 0, 0); //Nao escreve no color buffer 
-    glDisable(GL_DEPTH_TEST); //Torna inactivo o teste de profundidade 
-    glStencilFunc(GL_ALWAYS, 1, 1);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    //Coloca a 1 todos os pixels no stencil buffer que representam a superfície reflectora
-    //DESENHAR SUPERFÍCIE REFLECTORA
-    glColorMask(1, 1, 1, 1); //Activa a escrita de cor
-    drawFloor();
-    glEnable(GL_DEPTH_TEST); //Activa o teste de profundidade
-    glStencilFunc(GL_EQUAL, 1, 1);//O stencil test passa apenas quando o pixel tem o valor 1 no stencil buffer
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Stencil buffer read-only
-    //Desenha o objecto com a reflexão onde stencil buffer é 1
-    glPushMatrix();
-    glTranslatef(0, -cubeSize*1.5, 0);
-    glScalef(1, -1, 1);
-    // Faz o cubo ir para a parte de baixo da superfície refletora
-    //glTranslatef(0, cubeSize*1.5, 0);
-    // Desenhar cubo ( reflexão )
-    rubik.glDisplay();
-    glPopMatrix();
-    //DESENHAR OBJECTO REFLECTIDO
-    glDisable(GL_STENCIL_TEST); //Desactiva a utilização do stencil buffer 
-
-    //Blending
-	glEnable(GL_BLEND);
-	glColor4f(1, 1, 1, 0.25);
-	drawFloor();
-	glDisable(GL_BLEND);
-	glPopMatrix();
-}
 
 void drawScene(){
-
-
-
-	if(reflect == 1)
-		drawReflection();
+	// if(reflect == 1)
+	// 	drawReflection();
 
 	glPushMatrix();
+	if(scale){
+		for(int i = 0; i<10; i++){
+			glPushMatrix();
+			rubik.glDisplay();
+			rubik.scale_factor += xC / 30;
+			glPopMatrix();
+		}
+		scale = 0;
+	}
+	if(rotateCube){
+		glRotatef(90,1,0,1);
+		rotateCube = 0;
+	}
 	rubik.glDisplay();
 	glPopMatrix();
 
@@ -596,11 +585,92 @@ void drawScene(){
 
 }
 
+void drawReflection(){
+	glPushMatrix();
+	glTranslatef(0,-cubeSize*2,0);
+
+	glEnable(GL_STENCIL_TEST); //Activa o uso do stencil buffer 
+    glColorMask(0, 0, 0, 0); //Nao escreve no color buffer 
+    glDisable(GL_DEPTH_TEST); //Torna inactivo o teste de profundidade 
+    glStencilFunc(GL_ALWAYS, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    //Coloca a 1 todos os pixels no stencil buffer que representam a superfície reflectora
+    //DESENHAR SUPERFÍCIE REFLECTORA
+    glColorMask(1, 1, 1, 1); //Activa a escrita de cor
+    drawFloor();
+    glEnable(GL_DEPTH_TEST); //Activa o teste de profundidade
+    glStencilFunc(GL_EQUAL, 1, 1);//O stencil test passa apenas quando o pixel tem o valor 1 no stencil buffer
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); //Stencil buffer read-only
+    //Desenha o objecto com a reflexão onde stencil buffer é 1
+    glPushMatrix();
+    glTranslatef(0, -cubeSize*1.5, 0);
+    glScalef(1, -1, 1);
+    // Faz o cubo ir para a parte de baixo da superfície refletora
+    //glTranslatef(0, cubeSize*1.5, 0);
+    // Desenhar cubo ( reflexão )
+    drawScene();
+    //rubik.glDisplay();
+    glPopMatrix();
+    //DESENHAR OBJECTO REFLECTIDO
+    glDisable(GL_STENCIL_TEST); //Desactiva a utilização do stencil buffer 
+
+    //Blending
+	glEnable(GL_BLEND);
+	glColor4f(1, 1, 1, 0.25);
+	drawFloor();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+}
+
+// void drawScene(){
+// 	// if(reflect == 1)
+// 	// 	drawReflection();
+
+// 	glPushMatrix();
+// 	/*if(scale){
+// 		for(int i = 0; i<10; i++){
+// 			glPushMatrix();
+// 			rubik.glDisplay();
+// 			rubik.scale_factor += xC / 30;
+// 			glPopMatrix();
+// 		}
+// 		scale = 0;
+// 	}
+// 	if(rotateCube){
+// 		glRotatef(90,1,0,1);
+// 	}*/
+// 	rubik.glDisplay();
+// 	glPopMatrix();
+
+	
+// 	float trans_constant = xC*2;
+// 	float trans = xC*2;
+
+// 	drawSkybox();
+				
+
+// 	glEnable(GL_BLEND);
+// 	for (int i=1; i >= -1; i--) {
+// 		for (int j=1; j >= -1; j--) {
+// 			// 1-i , 1-j
+
+// 			glPushMatrix();
+
+// 			glColor4f(1, 1, 1, alpha);
+// 			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+
+// 			glPopMatrix();
+// 		}	
+// 	}
+// 	glDisable(GL_BLEND);
+
+// }
+
 void display(void){
 	float orthoX, orthoY, orthoZ;
-	orthoX = 3;
-	orthoY = 2.5;
-	orthoZ = 30;
+	orthoX = 8;
+	orthoY = 8;
+	orthoZ = 11;
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -612,7 +682,7 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 100); break;
+		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 1000); break;
 		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
 		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5);
 			break;
@@ -624,6 +694,8 @@ void display(void){
 	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
+	if(reflect == 1)
+		drawReflection();
 
 	drawScene();
 	glutSwapBuffers();
@@ -728,9 +800,11 @@ void keyboard(unsigned char key, int x, int y){
 
 		case '+':
 			printf("xC = %f\n", xC);
-			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			rubik.scale_factor += xC / 30;
-			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			rotateCube = 1;
+			scale = 1;
+			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
+			// rubik.scale_factor += xC / 30;
+			// printf("rubik.scale_factor = %f\n", rubik.scale_factor);
 			break;
 		case '-':
 			if (rubik.scale_factor > xC / 30)
