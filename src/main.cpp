@@ -23,7 +23,7 @@
 //===========================================================Variaveis e constantes
 
 //------------------------------------------------------------ Sistema Coordenadas
-GLfloat	  skybox = 500.0;
+GLfloat	  skybox = 300.0;
 GLfloat   xC=10.0f, yC=2.5, zC=30.0;
 GLfloat	  xZ=30.0, yZ=30.0, zZ=0.0;
 GLint     wScreen=800, hScreen=600;
@@ -31,7 +31,7 @@ GLint     wScreen=800, hScreen=600;
 //------------------------------------------------------------ Observador
 GLint    defineView=0;
 GLint    defineProj=1;
-GLfloat  raio   = 20;
+GLfloat  raio   = 30;
 GLfloat  angulo = 0.35*PI;
 GLfloat  obsP[] = {raio*cos(angulo), 5.5, raio*sin(angulo)};
 GLfloat  incy   = 0.5;
@@ -65,7 +65,7 @@ GLfloat sun_start[] = {skybox,(500-127), (500-142)};
 GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)};
 
 RubikCube rubik(3);
-float alpha = 0.0;
+float alpha = 1.0;
 
 int explode_particles = 0;
 int no_walls = 0;
@@ -316,17 +316,14 @@ void showParticles(Particle *particle) {
 
 void initParticles(Particle *particle, GLfloat x, GLfloat y, GLfloat z) {
 	GLfloat v, theta, phi;
-	GLfloat px, py, pz;
 	GLfloat particle_size;
 
-	px = -0.0;
-	py = 200.0;
-	pz = -200.0;
-	particle_size = 1.0;
+	particle_size = 0.75;
 
 	for (int i=0; i < MAX_PARTICLES; i++) {
 		v = 1 * frand() + 0.02;
-		theta = 1.0 * frand() * PI;
+		theta = frand() * PI;
+
 		phi = frand() * PI;
 
 		particle[i].size = particle_size;
@@ -337,16 +334,17 @@ void initParticles(Particle *particle, GLfloat x, GLfloat y, GLfloat z) {
 		particle[i].vx = v * cos(theta) * sin(phi);
 		particle[i].vy = v * cos(phi);
 		particle[i].vz = v * sin(theta) * sin(phi);	
+		//printf("vx = %f / vy = %f / vz = %f\n", particle[i].vx, particle[i].vy, particle[i].vz);
 
-		particle[i].ax = 0.01f;
-		particle[i].ay = 0.01f;
-		particle[i].az = 0.01f;
+		particle[i].ax = 0.02f;
+		particle[i].ay = 0.02f;
+		particle[i].az = 0.02f;
 
 		particle[i].r = 1.0f;
 		particle[i].g = 1.0f;
 		particle[i].b = 1.0f;
 		particle[i].life = 1.0f;
-		particle[i].fade = 0.06f;
+		particle[i].fade = 0.01f;
 	}
 }
 
@@ -544,26 +542,26 @@ void drawSkybox() {
 void drawScene() {
 	drawSkybox();
 
-	rubik.glDisplay();
+	glEnable(GL_BLEND);
+	glPushMatrix();
+		glColor4f(1,1,1,alpha);
+		rubik.glDisplay();
+	glPopMatrix();
+	glDisable(GL_BLEND);
 	
 	float trans_constant = xC*2;
 	float trans = xC*2;			
 
-	glEnable(GL_BLEND);
 	for (int i=1; i >= -1; i--) {
 		for (int j=1; j >= -1; j--) {
 			// 1-i , 1-j
 
 			glPushMatrix();
-
-			glColor4f(1, 1, 1, alpha);
 			if (!no_walls)
 				drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
-
 			glPopMatrix();
 		}	
 	}
-	glDisable(GL_BLEND);
 
 }
 
@@ -605,34 +603,23 @@ void drawReflection(){
 }
 
 void display(void) {
-	float orthoX, orthoY, orthoZ;
-	orthoX = 8.0;
-	orthoY = 8.0;
-	orthoZ = 11.0;
-
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Apagar ]
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Janela Visualizacao ]
-	glViewport (0,0,wScreen, hScreen);
+	glViewport (0,0, wScreen, hScreen);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~Per~~~~~~~~~~~~~~~~~~~~~~~~[ Projeccao]
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 1000); ortho_camera = 0; break;
-		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); ortho_camera = 0; break;
-		default: 
-			glOrtho (-orthoX*10, orthoX*10, -orthoY*10, orthoY*10, -orthoZ*10, orthoZ*10); 
-			alpha = 1.0;
-			ortho_camera = 1;
-			break;
+		case 1:	gluPerspective(88.0, wScreen/hScreen, 0.1, 1000); break;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Modelo+View(camera/observador) ]
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0, 1, 0);
+	gluLookAt(obsP[0], obsP[1], obsP[2], 0,0,0, 0,1,0);
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Objectos ]
 	if(reflect == 1)
@@ -647,6 +634,9 @@ void display(void) {
 		showParticles(particle4);
 		showParticles(particle5);
 		showParticles(particle6);
+		if (particle1[0].life <= 0.6f) {
+			no_walls = 1;
+		}
 		if (particle1[0].life <= 0) {
 			initParticles(particle1, 0.0, xC*3, 0.0);
 			initParticles(particle2, xC*3, -xC, 2.0);
@@ -654,19 +644,15 @@ void display(void) {
 			initParticles(particle4, -xC*3, xC, -xC);
 			initParticles(particle5, xC-1.0, xC, xC*2.5);
 			initParticles(particle6, -xC, -xC, -xC*3.5);
+			explode_particles = 0;
 		}
-		// explode_particles = 0;
 	}
 
 	glutSwapBuffers();
 }
 
 
-void Timer(int value)
-{
-	//initParticles(particle1);
-
-	//angBule=angBule+incBule;
+void Timer(int value) {
 	glutPostRedisplay();
 	glutTimerFunc(msec,Timer, 1);
 }
@@ -674,62 +660,89 @@ void Timer(int value)
 //======================================================= EVENTOS
 void keyboard(unsigned char key, int x, int y){
 	switch (key) {
-		case '1':	// FRONT: LEFT <-
-			rubik.highlight = 0;
-			glutPostRedisplay();
-			rubik.glRotate();
+			case '1':
+				if (!rotateCube) {
+					rubik.highlight = 0;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '2':
+				if (!rotateCube) {
+					rubik.highlight = 1;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}			
+				break;
+			case '3':
+				if (!rotateCube) {
+					rubik.highlight = 2;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '4':
+				if (!rotateCube) {
+					rubik.highlight = 3;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '5':
+				if (!rotateCube) {
+					rubik.highlight = 4;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '6':
+				if (!rotateCube) {
+					rubik.highlight = 5;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '7': 
+				if (!rotateCube) {
+					rubik.highlight = 6;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '8':
+				if (!rotateCube) {
+					rubik.highlight = 7;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '9':
+				if (!rotateCube) {
+					rubik.highlight = 8;
+					glutPostRedisplay();
+					rubik.glRotate();	
+				}
+				break;
+			case '0':
+				break;	
+
+		case 'w': case 'W':
+			if (raio > 1) {
+				raio -= 0.5;
+				obsP[0] = raio * cos(angulo);
+				obsP[2] = raio * sin(angulo);
+				glutPostRedisplay();
+			}
 			break;
-		case '2':	// FRONT: RIGHT ->
-			rubik.highlight = 1;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '3':	// LEFT: LEFT <-
-			rubik.highlight = 2;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '4':   // LEFT: RIGHT ->
-			rubik.highlight = 3;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '5':   // RIGHT: LEFT <-
-			rubik.highlight = 4;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '6':   // RIGHT: RIGHT ->
-			rubik.highlight = 5;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '7':   // BACK: LEFT <-
-			rubik.highlight = 6;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '8':   // BACK: RIGHT ->
-			rubik.highlight = 7;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '9':   // TOP: LEFT <-
-			rubik.highlight = 8;
-			glutPostRedisplay();
-			rubik.glRotate();
-			break;
-		case '0':   // TOP: RIGHT ->
+		case 's': case 'S':
+			if (raio < 120) {
+				raio += 0.5;
+				obsP[0] = raio * cos(angulo);
+				obsP[2] = raio * sin(angulo);
+				glutPostRedisplay();
+			}
 			break;
 
-		case 'q':
-		case 'Q':
-			if(defineProj <= 2)
-				defineProj += 1;
-			else
-				defineProj = 1;
-			glutPostRedisplay();
-			break;
 		case 'b':
 		case 'B':
 			if(reflect != 1)
@@ -743,23 +756,18 @@ void keyboard(unsigned char key, int x, int y){
 			explode_particles = 1;
 			break;
 
-		case 't':
-		case 'T':
-			if (!ortho_camera) {
-				if (alpha < 1.0)
-					alpha += 0.1f;
-				break;	
-			}
-		case 'r':
-		case 'R':
-			if (!ortho_camera) {
-				if (alpha >= 0.1f)
-					alpha -= 0.1f;
-				break;
-			}
+		case 't': case 'T':
+			if (alpha < 1.0)
+				alpha += 0.05f;
+			break;	
+		case 'r': case 'R':
+			if (alpha >= 0.6f)
+				alpha -= 0.05f;
+			printf("alpha = %f\n", alpha);
+			break;
 
-		case 'w': case 'W':
-			no_walls = 0;
+		case 'P': case 'p':
+			no_walls = !no_walls;
 			break;
 
 		case '+':
@@ -767,11 +775,9 @@ void keyboard(unsigned char key, int x, int y){
 			scale = 1;
 			rubik.scale_factor += xC / 30;
 			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			if (rubik.scale_factor >= 6 && rubik.scale_factor < 10 && !no_walls)
+			if (rubik.scale_factor >= 6 && rubik.scale_factor < 10 && !no_walls) {
 				explode_particles = 1;
-			if (rubik.scale_factor >= 10) {
-				explode_particles = 0;
-				no_walls = 1;
+				//no_walls = 1;
 			}
 			break;
 
@@ -780,6 +786,8 @@ void keyboard(unsigned char key, int x, int y){
 				rubik.scale_factor -= xC / 30;
 			else
 				rotateCube = 0;
+			if (rubik.scale_factor < 6)
+				explode_particles = 0;
 
 			break;
 
@@ -789,7 +797,8 @@ void keyboard(unsigned char key, int x, int y){
 			break;
 
 		case 13:
-			rubik.glRotate();
+			if (!rotateCube)
+				rubik.glRotate();
 			break;
 
 		case 27:	// ESC
@@ -800,18 +809,18 @@ void keyboard(unsigned char key, int x, int y){
 
 void teclasNotAscii(int key, int x, int y){
     if(key == GLUT_KEY_UP)
-		obsP[1]=obsP[1]+incy;
+		obsP[1] += incy*2;
 	if(key == GLUT_KEY_DOWN)
-		obsP[1]=obsP[1]-incy;
+		obsP[1] -= incy*2;
 	if(key == GLUT_KEY_LEFT)
 		angulo=angulo+inca;
 	if(key == GLUT_KEY_RIGHT)
 		angulo=angulo-inca;
 
-	if (obsP[1]> yC*2)
-		obsP[1]= yC*2;
-    if (obsP[1]<-yC)
-		obsP[1]=-yC;
+	if (obsP[1] > yC*20)
+		obsP[1] = yC*20;
+    if (obsP[1] < -yC*20)
+		obsP[1] = -yC*20;
 
     obsP[0] = raio*cos(angulo);
 	obsP[2] = raio*sin(angulo);
