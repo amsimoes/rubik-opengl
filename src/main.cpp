@@ -66,7 +66,10 @@ GLfloat sun_end[] = {-skybox,(-500+127), (-500+142)};
 
 RubikCube rubik(3);
 float alpha = 0.0;
+
 int explode_particles = 0;
+int no_walls = 0;
+int ortho_camera = 0;
 
 char particles_assets[6][64] = {"../assets/texturas_cubo/amarelo.bmp",
 			"../assets/texturas_cubo/verde.bmp", "../assets/texturas_cubo/vermelho.bmp",
@@ -539,13 +542,12 @@ void drawSkybox() {
 }
 
 void drawScene() {
+	drawSkybox();
 
 	rubik.glDisplay();
 	
 	float trans_constant = xC*2;
-	float trans = xC*2;
-
-	drawSkybox();			
+	float trans = xC*2;			
 
 	glEnable(GL_BLEND);
 	for (int i=1; i >= -1; i--) {
@@ -555,7 +557,8 @@ void drawScene() {
 			glPushMatrix();
 
 			glColor4f(1, 1, 1, alpha);
-			drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
+			if (!no_walls)
+				drawWalls(trans_constant, trans*i, trans*j, (-1-i)*-1, (-1-j)*-1);
 
 			glPopMatrix();
 		}	
@@ -601,7 +604,7 @@ void drawReflection(){
 	glPopMatrix();
 }
 
-void display(void){
+void display(void) {
 	float orthoX, orthoY, orthoZ;
 	orthoX = 8.0;
 	orthoY = 8.0;
@@ -617,9 +620,13 @@ void display(void){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	switch (defineProj) {
-		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 1000); break;
-		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); break;
-		default: glOrtho (-orthoX*5, orthoX*5, -orthoY*5, orthoY*5, -orthoZ*5, orthoZ*5); break;
+		case 1:	gluPerspective(100.0, wScreen/hScreen, 0.1, 1000); ortho_camera = 0; break;
+		case 2: gluPerspective(1000.0, wScreen/hScreen, 0.1, 1000); ortho_camera = 0; break;
+		default: 
+			glOrtho (-orthoX*10, orthoX*10, -orthoY*10, orthoY*10, -orthoZ*10, orthoZ*10); 
+			alpha = 1.0;
+			ortho_camera = 1;
+			break;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[ Modelo+View(camera/observador) ]
@@ -728,22 +735,26 @@ void keyboard(unsigned char key, int x, int y){
 
 		case 'e':
 		case 'E':
-			printf("TECLA EEEE\n");
-			showParticles(particle1);
-			if (particle1[0].life <= 0) {
-				initParticles(particle1);
-			}
+			explode_particles = 1;
 			break;
+
 		case 't':
 		case 'T':
-			if (alpha < 1.0)
-				alpha += 0.1f;
-			printf("alpha = %f\n", alpha);
-			break;
+			if (!ortho_camera) {
+				if (alpha < 1.0)
+					alpha += 0.1f;
+				break;	
+			}
 		case 'r':
 		case 'R':
-			if (alpha >= 0.1f)
-				alpha -= 0.1f;
+			if (!ortho_camera) {
+				if (alpha >= 0.1f)
+					alpha -= 0.1f;
+				break;
+			}
+
+		case 'w': case 'W':
+			no_walls = 0;
 			break;
 
 		case '+':
@@ -751,8 +762,9 @@ void keyboard(unsigned char key, int x, int y){
 			scale = 1;
 			rubik.scale_factor += xC / 30;
 			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			if (rubik.scale_factor >= 3) {
+			if (rubik.scale_factor >= 10) {
 				explode_particles = 1;
+				no_walls = 1;
 			}
 			break;
 
@@ -761,13 +773,11 @@ void keyboard(unsigned char key, int x, int y){
 				rubik.scale_factor -= xC / 30;
 			else
 				rotateCube = 0;
-			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			explode_particles = 0;
+
 			break;
 
 		case ' ':
 			rubik.highlightNext();
-			printf("highlight = %d\n", rubik.highlight);
 			glutPostRedisplay();
 			break;
 
