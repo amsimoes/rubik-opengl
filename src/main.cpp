@@ -314,7 +314,7 @@ void showParticles(Particle *particle) {
 	}
 }
 
-void initParticles(Particle *particle) {
+void initParticles(Particle *particle, GLfloat x, GLfloat y, GLfloat z) {
 	GLfloat v, theta, phi;
 	GLfloat px, py, pz;
 	GLfloat particle_size;
@@ -330,9 +330,9 @@ void initParticles(Particle *particle) {
 		phi = frand() * PI;
 
 		particle[i].size = particle_size;
-		particle[i].x = xC*2;
-		particle[i].y = xC*5;
-		particle[i].z = xC*4;
+		particle[i].x = x;
+		particle[i].y = y;
+		particle[i].z = z;
 
 		particle[i].vx = v * cos(theta) * sin(phi);
 		particle[i].vy = v * cos(phi);
@@ -642,16 +642,21 @@ void display(void) {
 
 	if (explode_particles) {
 		showParticles(particle1);
+		showParticles(particle2);
+		showParticles(particle3);
+		showParticles(particle4);
+		showParticles(particle5);
+		showParticles(particle6);
 		if (particle1[0].life <= 0) {
-			initParticles(particle1);
+			initParticles(particle1, 0.0, xC*3, 0.0);
+			initParticles(particle2, xC*3, -xC, 2.0);
+			initParticles(particle3, 0.0, -xC*3.5, -xC/2);
+			initParticles(particle4, -xC*3, xC, -xC);
+			initParticles(particle5, xC-1.0, xC, xC*2.5);
+			initParticles(particle6, -xC, -xC, -xC*3.5);
 		}
 		// explode_particles = 0;
 	}
-	//showParticles(particle1);
-	//printf("particle1[0].life = %f\n", particle1[0].life);
-	//if (particle1[0].life <= 0) {
-	//	initParticles(particle1);
-	//}
 
 	glutSwapBuffers();
 }
@@ -822,7 +827,12 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
-	initParticles(particle1);
+	initParticles(particle1, 0.0, xC*3, 0.0);
+	initParticles(particle2, xC*3, -xC, 2.0);
+	initParticles(particle3, 0.0, -xC*3.5, -xC/2);
+	initParticles(particle4, -xC*3, xC, -xC);
+	initParticles(particle5, xC-1.0, xC, xC*2.5);
+	initParticles(particle6, -xC, -xC, -xC*3.5);
 }
 
 void resizeWindow(GLsizei w, GLsizei h)

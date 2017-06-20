@@ -14,5 +14,10 @@ typedef struct {
 #define MAX_PARTICLES 3000
 
 Particle particle1[MAX_PARTICLES];
+Particle particle2[MAX_PARTICLES];
+Particle particle3[MAX_PARTICLES];
+Particle particle4[MAX_PARTICLES];
+Particle particle5[MAX_PARTICLES];
+Particle particle6[MAX_PARTICLES];
 
 #endif
