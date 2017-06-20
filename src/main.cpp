@@ -322,7 +322,7 @@ void initParticles(Particle *particle) {
 	px = -0.0;
 	py = 200.0;
 	pz = -200.0;
-	particle_size = 0.05;
+	particle_size = 1.0;
 
 	for (int i=0; i < MAX_PARTICLES; i++) {
 		v = 1 * frand() + 0.02;
@@ -330,9 +330,9 @@ void initParticles(Particle *particle) {
 		phi = frand() * PI;
 
 		particle[i].size = particle_size;
-		particle[i].x = 0.0;
-		particle[i].y = xC;
-		particle[i].z = 0.0;
+		particle[i].x = xC*2;
+		particle[i].y = xC*5;
+		particle[i].z = xC*4;
 
 		particle[i].vx = v * cos(theta) * sin(phi);
 		particle[i].vy = v * cos(phi);
@@ -762,8 +762,10 @@ void keyboard(unsigned char key, int x, int y){
 			scale = 1;
 			rubik.scale_factor += xC / 30;
 			printf("rubik.scale_factor = %f\n", rubik.scale_factor);
-			if (rubik.scale_factor >= 10) {
+			if (rubik.scale_factor >= 6 && rubik.scale_factor < 10 && !no_walls)
 				explode_particles = 1;
+			if (rubik.scale_factor >= 10) {
+				explode_particles = 0;
 				no_walls = 1;
 			}
 			break;
