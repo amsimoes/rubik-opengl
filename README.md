@@ -11,6 +11,10 @@ Authors: [António Simões](https://github.com/amsimoes) & [João Lopes](https:/
 * Skybox
 * Particles
 
+<p align="center">
+<img src="report/rubik.png" alt="gameplay"/>
+</p>
+
 # Running (Linux & MacOS)
 
 ```
