@@ -14,6 +14,7 @@ Authors: [António Simões](https://github.com/amsimoes) & [João Lopes](https:/
 # Running (Linux & MacOS)
 
 ```
+cd src
 make
 ./rubik
 ```
